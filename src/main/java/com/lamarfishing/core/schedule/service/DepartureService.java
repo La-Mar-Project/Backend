@@ -35,6 +35,10 @@ public class DepartureService {
         }
 
         Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
+        //출항 상태 변경
+        schedule.changeStatus(Schedule.Status.CONFIRMED);
+        scheduleRepository.save(schedule);
+
         List<Reservation> reservations = reservationRepository.findBySchedule(schedule);
 
         List<String> phones = new ArrayList<>();
@@ -58,6 +62,11 @@ public class DepartureService {
         }
 
         Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
+
+        //출항 상태 변경
+        schedule.changeStatus(Schedule.Status.CANCELED);
+        scheduleRepository.save(schedule);
+
         List<Reservation> reservations = reservationRepository.findBySchedule(schedule);
 
         List<String> phones = new ArrayList<>();
