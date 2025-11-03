@@ -1,9 +1,14 @@
 package com.lamarfishing.core.log.message.dto.response;
 
-import java.time.LocalDateTime;
+import com.lamarfishing.core.log.message.dto.command.MessageCommonDto;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Data
 public class DepartureResponse {
-    private LocalDateTime timeStamp;
-    private String recipientPhone;
-    private String content;
+    private List<MessageCommonDto> messages;
 }
