@@ -15,8 +15,11 @@ public enum ErrorCode {
     /**
      * schedule
      */
-    SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "Schedule not found");
-
+    SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "Schedule not found"),
+    /**
+     * message
+     */
+    MESSAGE_SEND_FAILED(HttpStatus.BAD_GATEWAY, "문자 전송 실패");
     private final HttpStatus status;
     private final String message;
 }
