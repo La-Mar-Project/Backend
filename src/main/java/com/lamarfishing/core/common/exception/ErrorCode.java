@@ -11,6 +11,7 @@ public enum ErrorCode {
      * common
      */
     INVALID_PUBLICId(HttpStatus.BAD_REQUEST, "Invalid publicId format"),
+    INVALID_REQUEST_CONTENT(HttpStatus.BAD_REQUEST, "Invalid request content"),
     /**
      * schedule
      */
