@@ -7,7 +7,14 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
-    INVALID_PUBLICId(HttpStatus.BAD_REQUEST, "Invalid publicId format");
+    /**
+     * common
+     */
+    INVALID_PUBLICId(HttpStatus.BAD_REQUEST, "Invalid publicId format"),
+    /**
+     * schedule
+     */
+    SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "Schedule not found");
 
     private final HttpStatus status;
     private final String message;

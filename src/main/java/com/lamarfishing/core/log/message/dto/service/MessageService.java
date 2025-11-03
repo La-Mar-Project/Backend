@@ -3,6 +3,7 @@ package com.lamarfishing.core.log.message.dto.service;
 import com.lamarfishing.core.log.message.dto.exception.InvalidPublicId;
 import com.lamarfishing.core.log.message.dto.request.DepartureRequest;
 import com.lamarfishing.core.log.message.dto.response.DepartureResponse;
+import com.lamarfishing.core.schedule.exception.ScheduleNotFound;
 import com.lamarfishing.core.schedule.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,5 +17,8 @@ public class MessageService {
         if(!publicId.startsWith("sch")){
             throw new InvalidPublicId();
         }
+
+        scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
+
     }
 }
