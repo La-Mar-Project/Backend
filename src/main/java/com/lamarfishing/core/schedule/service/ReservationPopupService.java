@@ -30,7 +30,7 @@ public class ReservationPopupService {
     private final UserRepository userRepository;
     private final CouponRepository couponRepository;
 
-    public ReservationPopupResponse getReservationPopup(Long userId, String grade,String publicId){
+    public ReservationPopupResponse getReservationPopup(Long userId, String grade, String publicId) {
         if (!publicId.startsWith("sch")) {
             throw new ScheduleInvalidPublicId();
         }
@@ -44,12 +44,17 @@ public class ReservationPopupService {
 
         Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
         Ship ship = schedule.getShip();
-        if(userGrade == User.Grade.ADMIN)
-        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
-        List<Coupon> coupons = couponRepository.findByUser(user);
-
         ShipDetailDto shipDetailDto = ShipMapper.toShipDetailResponse(ship);
+        List<Coupon> coupons;
 
-        return ReservationPopupResponse.from(schedule,shipDetailDto, coupons);
+        //유저라면
+        if (userGrade != User.Grade.GUEST) {
+            User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+            coupons = couponRepository.findByUser(user);
+        } else {
+            coupons = new ArrayList<>();
+        }
+
+        return ReservationPopupResponse.from(schedule, shipDetailDto, coupons);
     }
 }

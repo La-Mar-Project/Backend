@@ -10,6 +10,7 @@ import com.lamarfishing.core.ship.mapper.ShipMapper;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class ReservationPopupResponse {
     private ShipDetailDto ship;
     private String schedulePublicId;
     private LocalDateTime departure;
+    private DayOfWeek dayOfWeek;
     private Integer tide;
     private List<CouponCommonDto> coupons;
 
@@ -27,6 +29,7 @@ public class ReservationPopupResponse {
                 .ship(ship)
                 .schedulePublicId(schedule.getPublicId())
                 .departure(schedule.getDeparture())
+                .dayOfWeek(schedule.getDeparture().getDayOfWeek())
                 .tide(schedule.getTide())
                 .coupons(coupons.stream()
                         .map(CouponMapper::toCouponCommonDto)
