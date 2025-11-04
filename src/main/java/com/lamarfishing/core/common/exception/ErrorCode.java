@@ -13,6 +13,10 @@ public enum ErrorCode {
     INVALID_PUBLICId(HttpStatus.BAD_REQUEST, "Invalid publicId format"),
     INVALID_REQUEST_CONTENT(HttpStatus.BAD_REQUEST, "Invalid request content"),
     /**
+     * user
+     */
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found"),
+    /**
      * schedule
      */
     SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "Schedule not found"),
@@ -20,6 +24,9 @@ public enum ErrorCode {
      * message
      */
     MESSAGE_SEND_FAILED(HttpStatus.BAD_GATEWAY, "Message send failed");
+
+
     private final HttpStatus status;
     private final String message;
+
 }

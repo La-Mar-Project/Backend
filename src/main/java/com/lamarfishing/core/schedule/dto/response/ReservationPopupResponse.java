@@ -17,15 +17,15 @@ import java.util.List;
 @Builder
 public class ReservationPopupResponse {
     private ShipDetailDto ship;
-    private Long scheduleId;
+    private String schedulePublicId;
     private LocalDateTime departure;
     private Integer tide;
     private List<CouponCommonDto> coupons;
 
-    public static ReservationPopupResponse from(Schedule schedule, Ship ship, List<Coupon> coupons) {
+    public static ReservationPopupResponse from(Schedule schedule, ShipDetailDto ship, List<Coupon> coupons) {
         return ReservationPopupResponse.builder()
-                .ship(ShipMapper.toShipDetailResponse(ship))
-                .scheduleId(schedule.getId())
+                .ship(ship)
+                .schedulePublicId(schedule.getPublicId())
                 .departure(schedule.getDeparture())
                 .tide(schedule.getTide())
                 .coupons(coupons.stream()
