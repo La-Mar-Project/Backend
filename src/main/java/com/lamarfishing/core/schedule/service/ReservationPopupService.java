@@ -35,8 +35,6 @@ public class ReservationPopupService {
 
     public ReservationPopupResponse getReservationPopup(Long userId, String grade, String publicId) {
 
-        List<Coupon> coupons;
-        List<CouponCommonDto> couponCommonDtos = new ArrayList<>();
         ReservationUserDto reservationUserDto;
 
         if (!publicId.startsWith("sch")) {
@@ -57,11 +55,12 @@ public class ReservationPopupService {
         //유저라면
         if (userGrade != User.Grade.GUEST) {
             User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
-            coupons = couponRepository.findByUser(user);
-            for(Coupon coupon : coupons) {
-                CouponCommonDto couponCommonDto = CouponMapper.toCouponCommonDto(coupon);
-                couponCommonDtos.add(couponCommonDto);
-            }
+
+            List<CouponCommonDto> couponCommonDtos = couponRepository.findByUser(user)
+                    .stream()
+                    .map(CouponMapper::toCouponCommonDto)
+                    .toList();
+
             reservationUserDto = UserMapper.toReservationUserDto(user, couponCommonDtos);
         } else {
             reservationUserDto = UserMapper.toReservationUserDto();
@@ -70,10 +69,10 @@ public class ReservationPopupService {
         return ReservationPopupResponse.from(schedule, reservationUserDto,shipDetailDto);
     }
 
-    public ReservationCreateResponse getReservationCreateResponse(Long userId, String grade, String publicId) {
-        if (!publicId.startsWith("sch")) {
-            throw new ScheduleInvalidPublicId();
-        }
-
-    }
+//    public ReservationCreateResponse getReservationCreateResponse(Long userId, String grade, String publicId) {
+//        if (!publicId.startsWith("sch")) {
+//            throw new ScheduleInvalidPublicId();
+//        }
+//
+//    }
 }
