@@ -1,15 +1,25 @@
 package com.lamarfishing.core.schedule.service;
 
+import com.lamarfishing.core.coupon.domain.Coupon;
+import com.lamarfishing.core.coupon.dto.CouponCommonDto;
+import com.lamarfishing.core.coupon.mapper.CouponMapper;
+import com.lamarfishing.core.coupon.repository.CouponRepository;
 import com.lamarfishing.core.schedule.domain.Schedule;
 import com.lamarfishing.core.schedule.dto.response.ReservationPopupResponse;
 import com.lamarfishing.core.schedule.exception.ScheduleInvalidPublicId;
 import com.lamarfishing.core.schedule.exception.ScheduleNotFound;
 import com.lamarfishing.core.schedule.repository.ScheduleRepository;
 import com.lamarfishing.core.ship.domain.Ship;
+import com.lamarfishing.core.ship.dto.command.ShipDetailDto;
+import com.lamarfishing.core.ship.mapper.ShipMapper;
 import com.lamarfishing.core.user.domain.User;
+import com.lamarfishing.core.user.exception.UserNotFound;
 import com.lamarfishing.core.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,15 +27,20 @@ public class ReservationPopupService {
 
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
+    private final CouponRepository couponRepository;
 
-    public ReservationPopupResponse getReservationPopup(Long userId, String userName, User.Grade grade, String publicId){
+    public ReservationPopupResponse getReservationPopup(Long userId, String publicId){
         if (!publicId.startsWith("sch")) {
             throw new ScheduleInvalidPublicId();
         }
 
         Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
         Ship ship = schedule.getShip();
-        User user = userRepository.findById(userId).orElseThrow(UserNot);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+        List<Coupon> coupons = couponRepository.findByUser(user);
 
+        ShipDetailDto shipDetailDto = ShipMapper.toShipDetailResponse(ship);
+
+        return ReservationPopupResponse.from(schedule,shipDetailDto, coupons);
     }
 }
