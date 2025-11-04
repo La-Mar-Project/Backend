@@ -16,6 +16,7 @@ public enum ErrorCode {
      * user
      */
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found"),
+    INVALID_USER_GRADE(HttpStatus.BAD_REQUEST, "Invalid user grade"),
     /**
      * schedule
      */

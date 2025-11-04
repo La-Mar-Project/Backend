@@ -29,9 +29,15 @@ public class ReservationPopupService {
     private final UserRepository userRepository;
     private final CouponRepository couponRepository;
 
-    public ReservationPopupResponse getReservationPopup(Long userId, String publicId){
+    public ReservationPopupResponse getReservationPopup(Long userId, String grade,String publicId){
         if (!publicId.startsWith("sch")) {
             throw new ScheduleInvalidPublicId();
+        }
+        User.Grade userGrade;
+        try {
+            userGrade = User.Grade.valueOf(grade.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidGradeException();
         }
 
         Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
