@@ -16,7 +16,6 @@ public class ShipMapper {
 
     public static ReservationShipDto toReservationShipResponse(Ship ship, Integer remainHeadCount){
         return ReservationShipDto.builder()
-                .shipId(ship.getId())
                 .fishType(ship.getFishType())
                 .price(ship.getPrice())
                 .remainHeadCount(remainHeadCount)

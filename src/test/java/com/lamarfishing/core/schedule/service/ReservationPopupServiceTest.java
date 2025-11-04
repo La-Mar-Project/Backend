@@ -130,11 +130,12 @@ class ReservationPopupServiceTest {
         //then
         assertThat(response).isNotNull();
         //ship
-        assertThat(response.getShip().getShipId()).isEqualTo(ship.getId());
         assertThat(response.getShip().getFishType()).isEqualTo(ship.getFishType());
         assertThat(response.getShip().getPrice()).isEqualTo(ship.getPrice());
         assertThat(response.getShip().getRemainHeadCount()).isEqualTo(15);  // 20 - 5
-
+        assertThat(response.getShip().getNotification()).isEqualTo(ship.getNotification());
+        //user
+        assertThat(response.get)
 
 
     }
