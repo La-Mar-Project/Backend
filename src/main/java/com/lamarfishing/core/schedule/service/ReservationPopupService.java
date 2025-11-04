@@ -5,6 +5,7 @@ import com.lamarfishing.core.coupon.dto.CouponCommonDto;
 import com.lamarfishing.core.coupon.mapper.CouponMapper;
 import com.lamarfishing.core.coupon.repository.CouponRepository;
 import com.lamarfishing.core.schedule.domain.Schedule;
+import com.lamarfishing.core.schedule.dto.response.ReservationCreateResponse;
 import com.lamarfishing.core.schedule.dto.response.ReservationPopupResponse;
 import com.lamarfishing.core.schedule.exception.ScheduleInvalidPublicId;
 import com.lamarfishing.core.schedule.exception.ScheduleNotFound;
@@ -58,5 +59,10 @@ public class ReservationPopupService {
         return ReservationPopupResponse.from(schedule, shipDetailDto, coupons);
     }
 
-    public
+    public ReservationCreateResponse getReservationCreateResponse(Long userId, String grade, String publicId) {
+        if (!publicId.startsWith("sch")) {
+            throw new ScheduleInvalidPublicId();
+        }
+
+    }
 }
