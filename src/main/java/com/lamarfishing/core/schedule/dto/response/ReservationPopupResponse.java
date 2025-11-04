@@ -18,7 +18,7 @@ import java.util.List;
 @Builder
 public class ReservationPopupResponse {
     private ShipDetailDto ship;
-    private UserCommonDto
+    private
     private String schedulePublicId;
     private LocalDateTime departure;
     private DayOfWeek dayOfWeek;
