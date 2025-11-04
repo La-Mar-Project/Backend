@@ -158,4 +158,51 @@ class ReservationPopupServiceTest {
         assertThat(response.getTide()).isEqualTo(schedule.getTide());
 
     }
+
+    @DisplayName("getReservationPopup: 비회원 정상 조회")
+    @Test
+    void getReservationPopup_GUEST() {
+        //given
+        String GUEST_USERNAME = "비회원_이름";
+        String GUEST_NICKNAME = "비회원_닉네임";
+        String GUEST_PHONE = "비회원_전화번호";
+
+        Ship ship = Ship.create(20, "쭈갑", 90000, "주의사항 없음");
+
+        Schedule schedule = Schedule.create(LocalDateTime.of(2025, 11, 5, 0, 0),
+                5, 3, Schedule.Status.WAITING, Schedule.Type.NORMAL, ship);
+
+        User user = User.create("김지오", "geooeg", User.Grade.GUEST, "01012345678");  //사실 없는 객체임
+
+        Long userId = 1L;
+        String grade = "GUEST";
+        String publicId = schedule.getPublicId();
+
+        //when
+        when(scheduleRepository.findByPublicId(publicId)).thenReturn(Optional.of(schedule));
+
+        ReservationPopupResponse response =
+                reservationPopupService.getReservationPopup(userId, grade, publicId);
+
+        //then
+        assertThat(response).isNotNull();
+        //ship
+        assertThat(response.getShip().getFishType()).isEqualTo(ship.getFishType());
+        assertThat(response.getShip().getPrice()).isEqualTo(ship.getPrice());
+        assertThat(response.getShip().getNotification()).isEqualTo(ship.getNotification());
+        //user
+        assertThat(response.getUser().getUsername()).isEqualTo(GUEST_USERNAME);
+        assertThat(response.getUser().getNickname()).isEqualTo(GUEST_NICKNAME);
+        assertThat(response.getUser().getGrade()).isEqualTo(user.getGrade());
+        assertThat(response.getUser().getPhone()).isEqualTo(GUEST_PHONE);
+        assertThat(response.getUser().getCoupons()).isEmpty();
+        //schedule
+        assertThat(response.getSchedulePublicId()).isEqualTo(publicId);
+        assertThat(response.getDeparture()).isEqualTo(schedule.getDeparture());
+        assertThat(response.getTide()).isEqualTo(schedule.getTide());
+        assertThat(response.getRemainHeadCount()).isEqualTo(ship.getMaxHeadCount() - schedule.getCurrentHeadCount());
+        assertThat(response.getDayOfWeek()).isEqualTo((schedule.getDeparture().getDayOfWeek()));
+        assertThat(response.getTide()).isEqualTo(schedule.getTide());
+
+    }
 }
