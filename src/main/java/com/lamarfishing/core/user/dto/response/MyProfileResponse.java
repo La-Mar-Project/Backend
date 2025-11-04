@@ -1,6 +1,7 @@
 package com.lamarfishing.core.user.dto.response;
 
 import com.lamarfishing.core.coupon.domain.Coupon;
+import com.lamarfishing.core.coupon.dto.ProfileCouponDto;
 import com.lamarfishing.core.user.dto.command.MyProfileDto;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +18,7 @@ public class MyProfileResponse {
     private String nickname;
     private Grade grade;
     private String phone;
-    private List<Coupon> coupons;
+    private List<ProfileCouponDto> coupons;
 
     public static MyProfileResponse from(MyProfileDto dto) {
         return MyProfileResponse.builder()
