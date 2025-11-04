@@ -17,3 +17,9 @@ logging:
   level:
     org:
       hibernate.orm.jdbc.bind: trace
+
+# Solapi SMS 설정
+solapi:
+  api-key: ${SOLAPI_API_KEY}
+  api-secret: ${SOLAPI_API_SECRET}
+  sender: ${SOLAPI_SENDER_NUMBER}
