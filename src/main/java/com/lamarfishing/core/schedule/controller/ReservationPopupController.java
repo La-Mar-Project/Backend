@@ -17,7 +17,7 @@ public class ReservationPopupController {
      * 토큰 받는 방식 수정 필요
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<ReservationPopupResponse> getReservationPopup(@RequestAttribute(name = "수정필요") Long userId,
+    public ResponseEntity<ApiResponse<ReservationPopupResponse>> getReservationPopup(@RequestAttribute(name = "수정필요") Long userId,
                                                                                     @PathVariable("schedule_public_id") String publicId){
 
         ReservationPopupResponse popupResponse = reservationPopupService.getReservationPopup(userId,publicId);
