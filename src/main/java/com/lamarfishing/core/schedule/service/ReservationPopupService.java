@@ -70,10 +70,10 @@ public class ReservationPopupService {
         return ReservationPopupResponse.from(schedule, remainHeadCount, reservationUserDto, reservationShipDto);
     }
 
-//    public ReservationCreateResponse getReservationCreateResponse(Long userId, String grade, String publicId) {
-//        if (!publicId.startsWith("sch")) {
-//            throw new ScheduleInvalidPublicId();
-//        }
-//
-//    }
+    public ReservationCreateResponse getReservationCreateResponse(Long userId, String grade, String publicId) {
+        if (!publicId.startsWith("sch")) {
+            throw new ScheduleInvalidPublicId();
+        }
+
+    }
 }
