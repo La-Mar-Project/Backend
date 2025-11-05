@@ -4,6 +4,8 @@ import com.lamarfishing.core.coupon.dto.CouponCommonDto;
 import com.lamarfishing.core.coupon.mapper.CouponMapper;
 import com.lamarfishing.core.coupon.repository.CouponRepository;
 import com.lamarfishing.core.schedule.domain.Schedule;
+import com.lamarfishing.core.schedule.dto.request.ReservationPopupRequest;
+import com.lamarfishing.core.schedule.dto.response.ReservationCreateResponse;
 import com.lamarfishing.core.schedule.dto.response.ReservationPopupResponse;
 import com.lamarfishing.core.schedule.exception.ScheduleInvalidPublicId;
 import com.lamarfishing.core.schedule.exception.ScheduleNotFound;
@@ -19,11 +21,13 @@ import com.lamarfishing.core.user.mapper.UserMapper;
 import com.lamarfishing.core.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ReservationPopupService {
 
     private final ScheduleRepository scheduleRepository;
@@ -38,12 +42,7 @@ public class ReservationPopupService {
             throw new ScheduleInvalidPublicId();
         }
 
-        User.Grade userGrade;
-        try {
-            userGrade = User.Grade.valueOf(grade.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new InvalidUserGrade();
-        }
+        User.Grade userGrade = parseUserGrade(grade);
 
         Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
         Ship ship = schedule.getShip();
@@ -53,27 +52,44 @@ public class ReservationPopupService {
 
         ReservationShipDto reservationShipDto = ShipMapper.toReservationShipResponse(ship);
 
-        //유저라면
-        if (userGrade != User.Grade.GUEST) {
-            User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
-
-            List<CouponCommonDto> couponCommonDtos = couponRepository.findByUser(user)
-                    .stream()
-                    .map(CouponMapper::toCouponCommonDto)
-                    .toList();
-
-            reservationUserDto = UserMapper.toReservationUserDto(user, couponCommonDtos);
-        } else {
+        //비회원이라면
+        if (userGrade == User.Grade.GUEST){
             reservationUserDto = UserMapper.toReservationUserDto();
+            return ReservationPopupResponse.from(schedule, remainHeadCount, reservationUserDto, reservationShipDto);
         }
 
+        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+
+        List<CouponCommonDto> couponCommonDtos = couponRepository.findByUser(user)
+                .stream()
+                .map(CouponMapper::toCouponCommonDto)
+                .toList();
+
+        reservationUserDto = UserMapper.toReservationUserDto(user, couponCommonDtos);
         return ReservationPopupResponse.from(schedule, remainHeadCount, reservationUserDto, reservationShipDto);
     }
 
-    public ReservationCreateResponse getReservationCreateResponse(Long userId, String grade, String publicId) {
+    @Transactional
+    public ReservationCreateResponse createReservation(Long userId, String grade, String publicId, ReservationPopupRequest reservationPopupRequest) {
         if (!publicId.startsWith("sch")) {
             throw new ScheduleInvalidPublicId();
         }
 
+        User.Grade userGrade = parseUserGrade(grade);
+
+        Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
+
+        //비회원이라면
+        if (userGrade == User.Grade.GUEST) {
+
+        }
+    }
+
+    private User.Grade parseUserGrade(String grade) {
+        try {
+            return User.Grade.valueOf(grade.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidUserGrade();
+        }
     }
 }
