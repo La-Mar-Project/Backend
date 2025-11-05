@@ -12,5 +12,15 @@ public class ReservationPopupRequest {
     private String phone;
     private Integer headCount;
     private String request;
-    private Coupon coupon;
+    private Long couponId;
+
+    //생성자
+    public ReservationPopupRequest(String username, String nickname, String phone, Integer headCount, String request, Long couponId) {
+        this.username = username;
+        this.nickname = nickname;
+        this.phone = phone;
+        this.headCount = headCount;
+        this.request = request;
+        this.couponId = couponId;
+    }
 }
