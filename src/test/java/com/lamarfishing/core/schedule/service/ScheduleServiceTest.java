@@ -1,6 +1,7 @@
 package com.lamarfishing.core.schedule.service;
 
 import com.lamarfishing.core.reservation.domain.Reservation;
+import com.lamarfishing.core.reservation.dto.command.ReservationCommonDto;
 import com.lamarfishing.core.reservation.repository.ReservationRepository;
 import com.lamarfishing.core.schedule.domain.Schedule;
 import com.lamarfishing.core.schedule.dto.response.ScheduleDetailResponse;
@@ -60,6 +61,10 @@ class ScheduleServiceTest {
         //when
         ScheduleDetailResponse response = scheduleService.getScheduleDetail(publicId);
 
+        ReservationCommonDto resDto1 = response.getReservations().get(0);
+        ReservationCommonDto  resDto2 = response.getReservations().get(1);
+        ReservationCommonDto  resDto3 = response.getReservations().get(2);
+
         //then
 
         //common
@@ -69,11 +74,29 @@ class ScheduleServiceTest {
         assertThat(response.getShip().getShipId()).isEqualTo(ship.getId());
         assertThat(response.getShip().getFishType()).isEqualTo(ship.getFishType());
         assertThat(response.getShip().getPrice()).isEqualTo(ship.getPrice());
-
         //scheduleCommonDto
         assertThat(response.getSchedule().getSchedulePublicId()).isEqualTo(publicId);
         assertThat(response.getSchedule().getDeparture()).isEqualTo(schedule.getDeparture());
         assertThat(response.getSchedule().getTide()).isEqualTo(schedule.getTide());
-        assertThat(response.getSchedule().getRemainCount()).
+        assertThat(response.getSchedule().getRemainCount()).isEqualTo(ship.getMaxHeadCount()-schedule.getCurrentHeadCount());
+        //List<Reservation>
+        assertThat(resDto1.getGrade()).isEqualTo(user1.getGrade());
+        assertThat(resDto1.getNickname()).isEqualTo(user1.getNickname());
+        assertThat(resDto1.getProcess()).isEqualTo(reservation1.getProcess());
+        assertThat(resDto1.getHeadCount()).isEqualTo(reservation1.getHeadCount());
+        assertThat(resDto1.getReservationPublicId()).isEqualTo(reservation1.getPublicId());
+
+        assertThat(resDto2.getGrade()).isEqualTo(user2.getGrade());
+        assertThat(resDto2.getNickname()).isEqualTo(user2.getNickname());
+        assertThat(resDto2.getProcess()).isEqualTo(reservation2.getProcess());
+        assertThat(resDto2.getHeadCount()).isEqualTo(reservation2.getHeadCount());
+        assertThat(resDto2.getReservationPublicId()).isEqualTo(reservation2.getPublicId());
+
+        assertThat(resDto3.getGrade()).isEqualTo(user3.getGrade());
+        assertThat(resDto3.getNickname()).isEqualTo(user3.getNickname());
+        assertThat(resDto3.getProcess()).isEqualTo(reservation3.getProcess());
+        assertThat(resDto3.getHeadCount()).isEqualTo(reservation3.getHeadCount());
+        assertThat(resDto3.getReservationPublicId()).isEqualTo(reservation3.getPublicId());
+
     }
 }
