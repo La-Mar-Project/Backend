@@ -25,6 +25,8 @@ public enum ErrorCode {
      * coupon
      */
     INVALID_COUPON_STATUS(HttpStatus.BAD_REQUEST, "Invalid coupon status"),
+    COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "Coupon not found"),
+    UNAUTHORIZED_COUPON_ACCESS(HttpStatus.UNAUTHORIZED, "Unauthorized coupon access"),
     /**
      * message
      */
