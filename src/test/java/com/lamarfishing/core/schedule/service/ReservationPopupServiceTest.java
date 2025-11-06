@@ -122,7 +122,7 @@ class ReservationPopupServiceTest {
         //when
         when(scheduleRepository.findByPublicId(publicId)).thenReturn(Optional.of(schedule));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(couponRepository.findByUser(user)).thenReturn(couponEntities);
+        when(couponRepository.findByUserAndStatus(user,Coupon.Status.AVAILABLE)).thenReturn(couponEntities);
 
         ReservationPopupResponse response =
                 reservationPopupService.getReservationPopup(userId, grade, publicId);

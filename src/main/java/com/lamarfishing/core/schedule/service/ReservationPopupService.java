@@ -3,6 +3,7 @@ package com.lamarfishing.core.schedule.service;
 import com.lamarfishing.core.coupon.domain.Coupon;
 import com.lamarfishing.core.coupon.dto.CouponCommonDto;
 import com.lamarfishing.core.coupon.exception.CouponNotFound;
+import com.lamarfishing.core.coupon.exception.UnauthorizedCouponAccess;
 import com.lamarfishing.core.coupon.mapper.CouponMapper;
 import com.lamarfishing.core.coupon.repository.CouponRepository;
 import com.lamarfishing.core.reservation.domain.Reservation;
@@ -109,9 +110,7 @@ public class ReservationPopupService {
             if (!coupon.getUser().equals(user)) {
                 throw new UnauthorizedCouponAccess();
             }
-
-            // 상태 검증
-            coupon.use(); // 내부에서 AVAILABLE & 기간 검증
+            coupon.use();
         }
 
         Reservation reservation = Reservation.create(headCount,userRequest,totalPrice, Reservation.Process.RESERVE_COMPLETED,user,schedule);
