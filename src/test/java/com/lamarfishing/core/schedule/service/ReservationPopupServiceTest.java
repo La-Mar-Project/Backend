@@ -5,9 +5,10 @@ import com.lamarfishing.core.coupon.dto.CouponCommonDto;
 import com.lamarfishing.core.coupon.mapper.CouponMapper;
 import com.lamarfishing.core.coupon.repository.CouponRepository;
 import com.lamarfishing.core.reservation.domain.Reservation;
-import com.lamarfishing.core.schedule.controller.ReservationPopupController;
+import com.lamarfishing.core.reservation.repository.ReservationRepository;
 import com.lamarfishing.core.schedule.domain.Schedule;
 import com.lamarfishing.core.schedule.dto.request.ReservationPopupRequest;
+import com.lamarfishing.core.schedule.dto.response.ReservationCreateResponse;
 import com.lamarfishing.core.schedule.dto.response.ReservationPopupResponse;
 import com.lamarfishing.core.schedule.exception.ScheduleInvalidPublicId;
 import com.lamarfishing.core.schedule.repository.ScheduleRepository;
@@ -20,19 +21,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.CsvSources;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationPopupServiceTest {
@@ -46,6 +47,8 @@ class ReservationPopupServiceTest {
     private UserRepository userRepository;
     @Mock
     private CouponRepository couponRepository;
+    @Mock
+    private ReservationRepository reservationRepository;
 
     /**
      * getReservationPopup
@@ -122,7 +125,7 @@ class ReservationPopupServiceTest {
         //when
         when(scheduleRepository.findByPublicId(publicId)).thenReturn(Optional.of(schedule));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(couponRepository.findByUserAndStatus(user,Coupon.Status.AVAILABLE)).thenReturn(couponEntities);
+        when(couponRepository.findByUserAndStatus(user, Coupon.Status.AVAILABLE)).thenReturn(couponEntities);
 
         ReservationPopupResponse response =
                 reservationPopupService.getReservationPopup(userId, grade, publicId);
@@ -209,7 +212,7 @@ class ReservationPopupServiceTest {
 
         // when, then
         assertThatThrownBy(() ->
-                reservationPopupService.createReservation(userId, grade, invalidPublicId,null)
+                reservationPopupService.createReservation(userId, grade, invalidPublicId, null)
         ).isInstanceOf(ScheduleInvalidPublicId.class);
     }
 
@@ -223,13 +226,13 @@ class ReservationPopupServiceTest {
 
         // when, then
         assertThatThrownBy(() ->
-                reservationPopupService.createReservation(userId, grade, invalidPublicId,null)
+                reservationPopupService.createReservation(userId, grade, invalidPublicId, null)
         ).isInstanceOf(InvalidUserGrade.class);
     }
 
-    @DisplayName("createReservation: BASIC 회원 정상 로직 - 값 검증")
+    @DisplayName("createReservation: BASIC 회원 정상 로직 - Response Body/ Reservation 검증")
     @Test
-    void createReservation_BASIC_값검증() {
+    void createReservation_BASIC_Reservation_검증() {
         Long userId = 1L;
         String grade = "BASIC";
         String publicId = "sch-001";
@@ -248,37 +251,120 @@ class ReservationPopupServiceTest {
 
         Coupon coupon = Coupon.create(Coupon.Type.WEEKDAY, user);
 
+        // repository mock stubbing
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(scheduleRepository.findByPublicId(publicId)).thenReturn(Optional.of(schedule));
+        when(reservationRepository.save(any()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
         ReservationPopupRequest request = ReservationPopupRequest.builder()
                 .headCount(2)
                 .request("내가 왕이다.")
                 .couponId(coupon.getId())
                 .build();
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(scheduleRepository.findByPublicId(publicId)).thenReturn(Optional.of(schedule));
-        when(couponRepository.findById(coupon.getId())).thenReturn(Optional.of(coupon));
-
         ArgumentCaptor<Reservation> captor = ArgumentCaptor.forClass(Reservation.class);
-        when(reservationRepository.save(any(Reservation.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
 
-        ReservationCreateResponse response =
-                reservationPopupService.createReservation(userId, grade, publicId, request);
+        ReservationCreateResponse reservationCreateResponse = reservationPopupService.createReservation(userId, grade, publicId, request);
 
         verify(reservationRepository).save(captor.capture());
         Reservation saved = captor.getValue();
 
-        assertThat(saved).isNotNull();
+        //common
+        assertThat(reservationCreateResponse).isNotNull();
+        //Reservation
+        assertThat(saved.getPublicId()).isEqualTo(reservationCreateResponse.getReservationPublicId());
         assertThat(saved.getHeadCount()).isEqualTo(2);
         assertThat(saved.getRequest()).isEqualTo("내가 왕이다.");
-        assertThat(saved.getTotalPrice()).isEqualTo(ship.getPrice() * 2);
+        assertThat(saved.getTotalPrice()).isEqualTo(2 * ship.getPrice());
+        assertThat(saved.getProcess()).isEqualTo(Reservation.Process.RESERVE_COMPLETED);
         assertThat(saved.getUser()).isEqualTo(user);
         assertThat(saved.getSchedule()).isEqualTo(schedule);
-        assertThat(saved.getProcess()).isEqualTo(Reservation.Process.RESERVE_COMPLETED);
-
-        assertThat(response.getReservationPublicId()).isEqualTo(saved.getPublicId());
-        assertThat(schedule.getCurrentHeadCount()).isEqualTo(5 + 2);
     }
 
+    @DisplayName("createReservation: BASIC 회원 정상 로직 - Schedule 검증")
+    @Test
+    void createReservation_BASIC_Schedule_검증() {
+        Long userId = 1L;
+        String grade = "BASIC";
+        String publicId = "sch-001";
+
+        User user = User.create("김지오", "geo", User.Grade.BASIC, "01012341234");
+        Ship ship = Ship.create(20, "쭈갑", 90000, "주의사항 없음");
+
+        Schedule schedule = Schedule.create(
+                LocalDateTime.of(2025, 11, 5, 0, 0),
+                5,
+                3,
+                Schedule.Status.WAITING,
+                Schedule.Type.NORMAL,
+                ship
+        );
+        int beforeCurrentHeadCount = schedule.getCurrentHeadCount();
+
+        Coupon coupon = Coupon.create(Coupon.Type.WEEKDAY, user);
+
+        // repository mock stubbing
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(scheduleRepository.findByPublicId(publicId)).thenReturn(Optional.of(schedule));
+        when(reservationRepository.save(any()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        ReservationPopupRequest request = ReservationPopupRequest.builder()
+                .headCount(2)
+                .request("내가 왕이다.")
+                .couponId(coupon.getId())
+                .build();
+
+
+        ReservationCreateResponse reservationCreateResponse = reservationPopupService.createReservation(userId, grade, publicId, request);
+
+        int afterCurrentHeadCount = schedule.getCurrentHeadCount();
+       //Schedule
+        assertThat(afterCurrentHeadCount).isEqualTo(beforeCurrentHeadCount - request.getHeadCount());
+    }
+
+    @DisplayName("createReservation: BASIC 회원 정상 로직 - Coupon 검증")
+    @Test
+    void createReservation_BASIC_Coupon_검증() {
+        Long userId = 1L;
+        String grade = "BASIC";
+        String publicId = "sch-001";
+
+        User user = User.create("김지오", "geo", User.Grade.BASIC, "01012341234");
+        Ship ship = Ship.create(20, "쭈갑", 90000, "주의사항 없음");
+
+        Schedule schedule = Schedule.create(
+                LocalDateTime.of(2025, 11, 5, 0, 0),
+                5,
+                3,
+                Schedule.Status.WAITING,
+                Schedule.Type.NORMAL,
+                ship
+        );
+
+        Coupon coupon = Coupon.create(Coupon.Type.WEEKDAY, user);
+        //coupon id 강제 세팅
+        ReflectionTestUtils.setField(coupon, "id", 1L);
+
+        ReservationPopupRequest request = ReservationPopupRequest.builder()
+                .headCount(2)
+                .request("내가 왕이다.")
+                .couponId(coupon.getId())
+                .build();
+
+        // repository mock stubbing
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(scheduleRepository.findByPublicId(publicId)).thenReturn(Optional.of(schedule));
+        when(couponRepository.findById(coupon.getId())).thenReturn(Optional.of(coupon));
+        when(reservationRepository.save(any()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        ReservationCreateResponse reservationCreateResponse = reservationPopupService.createReservation(userId, grade, publicId, request);
+
+        //Coupon
+        assertThat(coupon.getUser()).isEqualTo(user);
+        assertThat(coupon.getStatus()).isEqualTo(Coupon.Status.USED);
+    }
 
 }
