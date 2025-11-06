@@ -1,5 +1,6 @@
 package com.lamarfishing.core.coupon.domain;
 
+import com.lamarfishing.core.coupon.exception.InvalidCouponStatus;
 import com.lamarfishing.core.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -58,12 +59,19 @@ public class Coupon {
 
     //쿠폰 사용
     public void use() {
-        if (this.status != Status.AVAILABLE) {
-            throw new IllegalStateException("이미 사용되었거나 만료된 쿠폰입니다.");
+        if (expiresAt.isBefore(LocalDateTime.now())) {
+            throw new InvalidCouponStatus(); // 기간 만료
         }
-        if (this.expiresAt.isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("쿠폰이 만료되었습니다.");
+        if (status != Status.AVAILABLE) {
+            throw new InvalidCouponStatus(); // 상태 비정상
         }
         this.status = Status.USED;
+    }
+
+    //만료
+    public void expire() {
+        if (this.status == Status.AVAILABLE && this.expiresAt.isBefore(LocalDateTime.now())) {
+            this.status = Status.EXPIRED;
+        }
     }
 }
