@@ -227,28 +227,58 @@ class ReservationPopupServiceTest {
         ).isInstanceOf(InvalidUserGrade.class);
     }
 
-    @DisplayName("createReservation: 회원 정상 로직")
+    @DisplayName("createReservation: BASIC 회원 정상 로직 - 값 검증")
     @Test
-    void createReservation_BASIC(){
-        // given
+    void createReservation_BASIC_값검증() {
         Long userId = 1L;
         String grade = "BASIC";
         String publicId = "sch-001";
 
-        //mock 객체
-        User mockUser = mock(User.class);
-        Ship mockShip = mock(Ship.class);
-        Schedule mockSchedule = mock(Schedule.class);
-        Coupon mockCoupon = mock(Coupon.class);
+        User user = User.create("김지오", "geo", User.Grade.BASIC, "01012341234");
+        Ship ship = Ship.create(20, "쭈갑", 90000, "주의사항 없음");
 
-        // 더미 요청 객체 생성
+        Schedule schedule = Schedule.create(
+                LocalDateTime.of(2025, 11, 5, 0, 0),
+                5,
+                3,
+                Schedule.Status.WAITING,
+                Schedule.Type.NORMAL,
+                ship
+        );
+
+        Coupon coupon = Coupon.create(Coupon.Type.WEEKDAY, user);
+
         ReservationPopupRequest request = ReservationPopupRequest.builder()
-                .username(null)
-                .nickname(null)
-                .phone(null)
                 .headCount(2)
                 .request("내가 왕이다.")
-                .couponId(1L)
+                .couponId(coupon.getId())
                 .build();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(scheduleRepository.findByPublicId(publicId)).thenReturn(Optional.of(schedule));
+        when(couponRepository.findById(coupon.getId())).thenReturn(Optional.of(coupon));
+
+        ArgumentCaptor<Reservation> captor = ArgumentCaptor.forClass(Reservation.class);
+        when(reservationRepository.save(any(Reservation.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        ReservationCreateResponse response =
+                reservationPopupService.createReservation(userId, grade, publicId, request);
+
+        verify(reservationRepository).save(captor.capture());
+        Reservation saved = captor.getValue();
+
+        assertThat(saved).isNotNull();
+        assertThat(saved.getHeadCount()).isEqualTo(2);
+        assertThat(saved.getRequest()).isEqualTo("내가 왕이다.");
+        assertThat(saved.getTotalPrice()).isEqualTo(ship.getPrice() * 2);
+        assertThat(saved.getUser()).isEqualTo(user);
+        assertThat(saved.getSchedule()).isEqualTo(schedule);
+        assertThat(saved.getProcess()).isEqualTo(Reservation.Process.RESERVE_COMPLETED);
+
+        assertThat(response.getReservationPublicId()).isEqualTo(saved.getPublicId());
+        assertThat(schedule.getCurrentHeadCount()).isEqualTo(5 + 2);
     }
+
+
 }

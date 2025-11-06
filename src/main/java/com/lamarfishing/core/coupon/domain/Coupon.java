@@ -46,15 +46,15 @@ public class Coupon {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private Coupon(LocalDateTime expiresAt, Type type, User user) {
+    private Coupon(LocalDateTime expiresAt, Type type, User user, Status status) {
         this.expiresAt = expiresAt;
         this.type = type;
         this.user = user;
-        this.status = Status.AVAILABLE;
+        this.status = status;
     }
 
     public static Coupon create(Type type, User user) {
-        return new Coupon(LocalDateTime.now().plusDays(30), type, user);
+        return new Coupon(LocalDateTime.now().plusDays(30), type, user,  Status.AVAILABLE);
     }
 
     //쿠폰 사용
