@@ -20,4 +20,5 @@ public class ReservationDetailResponse {
                 .schedule(schedule)
                 .build();
     }
+
 }
