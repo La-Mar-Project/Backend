@@ -11,7 +11,7 @@ import com.lamarfishing.core.schedule.exception.ScheduleNotFound;
 import com.lamarfishing.core.schedule.mapper.ScheduleMapper;
 import com.lamarfishing.core.schedule.repository.ScheduleRepository;
 import com.lamarfishing.core.ship.domain.Ship;
-import com.lamarfishing.core.ship.dto.command.ShipCommonDto;
+import com.lamarfishing.core.ship.dto.command.ShipDetailDto;
 import com.lamarfishing.core.ship.mapper.ShipMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,7 +35,7 @@ public class ScheduleService {
         ScheduleDetailDto scheduleDetailDto = ScheduleMapper.toScheduleDetailDto(schedule);
 
         Ship ship = schedule.getShip();
-        ShipCommonDto shipCommonDto = ShipMapper.toShipCommonResponse(ship);
+        ShipDetailDto shipDetailDto = ShipMapper.toShipDetailResponse(ship);
 
         List<ReservationCommonDto> reservations =
                 reservationRepository.findBySchedule(schedule)
@@ -43,7 +43,7 @@ public class ScheduleService {
                         .map(ReservationMapper::toReservationCommonDto)
                         .toList();
 
-        ScheduleDetailResponse scheduleDetailResponse = ScheduleDetailResponse.from(shipCommonDto, scheduleDetailDto, reservations);
+        ScheduleDetailResponse scheduleDetailResponse = ScheduleDetailResponse.from(shipDetailDto, scheduleDetailDto, reservations);
 
         return scheduleDetailResponse;
     }

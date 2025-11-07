@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ShipCommonDto {
+public class ShipDetailDto {
 
     private Long shipId;
     private String fishType;

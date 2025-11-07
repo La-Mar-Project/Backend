@@ -70,7 +70,7 @@ class ScheduleServiceTest {
         //common
         assertThat(response).isNotNull();
 
-        //shipCommonDto
+        //shipDetailDto
         assertThat(response.getShip().getShipId()).isEqualTo(ship.getId());
         assertThat(response.getShip().getFishType()).isEqualTo(ship.getFishType());
         assertThat(response.getShip().getPrice()).isEqualTo(ship.getPrice());

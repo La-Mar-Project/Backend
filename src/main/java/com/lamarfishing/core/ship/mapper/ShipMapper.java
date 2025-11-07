@@ -1,13 +1,13 @@
 package com.lamarfishing.core.ship.mapper;
 
 import com.lamarfishing.core.ship.domain.Ship;
-import com.lamarfishing.core.ship.dto.command.ShipCommonDto;
+import com.lamarfishing.core.ship.dto.command.ShipDetailDto;
 import com.lamarfishing.core.ship.dto.command.ReservationShipDto;
 
 public class ShipMapper {
 
-    public static ShipCommonDto toShipCommonResponse(Ship ship){
-        return ShipCommonDto.builder()
+    public static ShipDetailDto toShipDetailResponse(Ship ship){
+        return ShipDetailDto.builder()
                 .shipId(ship.getId())
                 .fishType(ship.getFishType())
                 .price(ship.getPrice())
