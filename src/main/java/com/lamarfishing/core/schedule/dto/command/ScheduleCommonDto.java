@@ -11,6 +11,6 @@ public class ScheduleCommonDto {
     private String schedulePublicId;
     private LocalDateTime departure;
     private Integer tide;
-    private Integer remainCount;        //ship join 필요
+    private Integer remainCount;
 
 }
