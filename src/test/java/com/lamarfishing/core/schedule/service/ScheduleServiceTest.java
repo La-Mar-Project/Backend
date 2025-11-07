@@ -49,9 +49,9 @@ class ScheduleServiceTest {
         User user2 = User.create("원종윤", "bellyun", User.Grade.BASIC, "01077776777");
         User user3 = User.create("김승규", "wingyu", User.Grade.VIP, "01088889888");
         //예약 생성
-        Reservation reservation1 = Reservation.create(3, "김지오입니다.", 270000, Reservation.Process.RESERVE_COMPLETED, user1, schedule);
-        Reservation reservation2 = Reservation.create(5, "원종윤입니다.", 450000, Reservation.Process.RESERVE_COMPLETED, user2, schedule);
-        Reservation reservation3 = Reservation.create(8, "김승규입니다.", 720000, Reservation.Process.RESERVE_COMPLETED, user3, schedule);
+        Reservation reservation1 = Reservation.create(3, "김지오입니다.", 270000, Reservation.Process.RESERVE_COMPLETED, user1, schedule,null);
+        Reservation reservation2 = Reservation.create(5, "원종윤입니다.", 450000, Reservation.Process.RESERVE_COMPLETED, user2, schedule,null);
+        Reservation reservation3 = Reservation.create(8, "김승규입니다.", 720000, Reservation.Process.RESERVE_COMPLETED, user3, schedule,null);
 
         String publicId = schedule.getPublicId();
         when(scheduleRepository.findByPublicId(publicId)).thenReturn(Optional.of(schedule));

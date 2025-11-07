@@ -280,6 +280,7 @@ class ReservationPopupServiceTest {
         assertThat(saved.getProcess()).isEqualTo(Reservation.Process.RESERVE_COMPLETED);
         assertThat(saved.getUser()).isEqualTo(user);
         assertThat(saved.getSchedule()).isEqualTo(schedule);
+        assertThat(saved.getCoupon()).isEqualTo(coupon);
     }
 
     @DisplayName("createReservation: BASIC 회원 정상 로직 - Schedule 검증")

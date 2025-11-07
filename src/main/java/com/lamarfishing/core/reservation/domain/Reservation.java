@@ -66,6 +66,7 @@ public class Reservation {
         this.process = process;
         this.user = user;
         this.schedule = schedule;
+        this.coupon = coupon;
     }
 
     public static Reservation create(int headCount, String request, int totalPrice, Process process, User user, Schedule schedule, Coupon coupon) {
@@ -76,6 +77,7 @@ public class Reservation {
                 .process(process)
                 .user(user)
                 .schedule(schedule)
+                .coupon(coupon)
                 .build();
     }
 }
