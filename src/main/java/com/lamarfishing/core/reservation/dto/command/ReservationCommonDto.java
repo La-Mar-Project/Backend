@@ -11,7 +11,6 @@ import static com.lamarfishing.core.user.domain.User.*;
 @Getter
 @Builder
 public class ReservationCommonDto {
-    private Long reservationId;
     private String reservationPublicId;
     private String nickname;                //user field
     private Grade grade;                    //user field
