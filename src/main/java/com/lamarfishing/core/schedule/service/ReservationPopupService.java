@@ -117,7 +117,7 @@ public class ReservationPopupService {
             coupon.use();
         }
 
-        Reservation reservation = Reservation.create(headCount,userRequest,totalPrice, Reservation.Process.RESERVE_COMPLETED,user,schedule);
+        Reservation reservation = Reservation.create(headCount,userRequest,totalPrice, Reservation.Process.RESERVE_COMPLETED,user,schedule,coupon);
         reservationRepository.save(reservation);
         schedule.decreaseCurrentHeadCount(headCount);
 
