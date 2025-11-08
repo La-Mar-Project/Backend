@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/schedules/{schedule_public_id}/reservation")
+@RequestMapping("/schedules/{schedulePublicId}/reservation")
 public class ReservationPopupController {
 
     private final ReservationPopupService reservationPopupService;
@@ -30,7 +30,7 @@ public class ReservationPopupController {
 
     //더미 컨트롤러
     @GetMapping
-    public ResponseEntity<ApiResponse<ReservationPopupResponse>> getReservationPopup(@PathVariable("schedule_public_id") String publicId){
+    public ResponseEntity<ApiResponse<ReservationPopupResponse>> getReservationPopup(@PathVariable("schedulePublicId") String publicId){
 
         Long userId = 1L;   //BASIC
         ReservationPopupResponse popupResponse = reservationPopupService.getReservationPopup(userId,publicId);
@@ -52,7 +52,7 @@ public class ReservationPopupController {
 //    }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<ReservationCreateResponse>> createReservation(@PathVariable("schedule_public_id") String publicId,
+    public ResponseEntity<ApiResponse<ReservationCreateResponse>> createReservation(@PathVariable("schedulePublicId") String publicId,
                                                                                     @RequestBody ReservationPopupRequest reservationPopupRequest) {
 
         Long userId = 1L; //BASIC
