@@ -74,4 +74,9 @@ public class Coupon {
             this.status = Status.EXPIRED;
         }
     }
+
+    //더미 데이터 입력용 생성 메서드
+    public static Coupon createDummy(LocalDateTime expiresAt, Type type, User user, Status status) {
+        return new Coupon(expiresAt, type, user, status);
+    }
 }
