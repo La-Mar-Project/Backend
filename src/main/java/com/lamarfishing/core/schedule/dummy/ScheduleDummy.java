@@ -27,7 +27,6 @@ public class ScheduleDummy {
 
         List<Ship> ships = shipRepository.findAll();
 
-        // ✅ 2025년 11월 10일 05:00 출항 기준
         LocalDateTime baseDate = LocalDateTime.of(2025, 11, 10, 5, 0);
 
         for (int i = 0; i < 30; i++) {
