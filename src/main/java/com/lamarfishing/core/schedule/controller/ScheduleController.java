@@ -19,8 +19,8 @@ public class ScheduleController {
     /**
      * 출항 일정 상세보기
      */
-    @GetMapping("/{schedule_public_id}")
-    public ResponseEntity<ApiResponse<ScheduleDetailResponse>> getScheduleDetail(@PathVariable String publicId) {
+    @GetMapping("/{schedulePublicId}")
+    public ResponseEntity<ApiResponse<ScheduleDetailResponse>> getScheduleDetail(@PathVariable("schedulePublicId") String publicId) {
         ScheduleDetailResponse scheduleDetailResponse = scheduleService.getScheduleDetail(publicId);
 
         return ResponseEntity.ok(ApiResponse.success("출항 일정 상세보기에 성공하였습니다.", scheduleDetailResponse));
