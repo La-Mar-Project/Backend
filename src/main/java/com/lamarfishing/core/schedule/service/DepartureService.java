@@ -12,6 +12,9 @@ import com.lamarfishing.core.schedule.exception.InvalidSchedulePublicId;
 import com.lamarfishing.core.schedule.exception.ScheduleNotFound;
 import com.lamarfishing.core.schedule.repository.ScheduleRepository;
 import com.lamarfishing.core.user.domain.User;
+import com.lamarfishing.core.user.exception.InvalidUserGrade;
+import com.lamarfishing.core.user.exception.UserNotFound;
+import com.lamarfishing.core.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,16 +28,23 @@ import java.util.List;
 public class DepartureService {
     private final ScheduleRepository scheduleRepository;
     private final ReservationRepository reservationRepository;
+    private final UserRepository userRepository;
+
     private final MessageService messageService;
 
     //출항 확정
-    public DepartureResponse confirmation(String publicId, DepartureRequest departureRequest) {
+    public DepartureResponse confirmation(Long userId, String publicId, DepartureRequest departureRequest) {
         Schedule.Status scheduleStatus = departureRequest.getScheduleStatus();
         if (scheduleStatus != Schedule.Status.CONFIRMED) {
             throw new InvalidDepartureRequest();
         }
         if (!publicId.startsWith("sch")) {
             throw new InvalidSchedulePublicId();
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+        if(user.getGrade() != User.Grade.ADMIN){
+            throw new InvalidUserGrade();
         }
 
         Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
@@ -46,8 +56,8 @@ public class DepartureService {
 
         List<String> phones = new ArrayList<>();
         for (Reservation reservation : reservations) {
-            User user = reservation.getUser();
-            phones.add(user.getPhone());
+            User reservationUser = reservation.getUser();
+            phones.add(reservationUser.getPhone());
         }
 
         List<MessageCommonDto> messageCommonDto = messageService.sendDepartureConfirmedMessages(phones);
@@ -56,13 +66,18 @@ public class DepartureService {
     }
 
     //출항 취소
-    public DepartureResponse cancel(String publicId, DepartureRequest departureRequest) {
+    public DepartureResponse cancel(Long userId, String publicId, DepartureRequest departureRequest) {
         Schedule.Status scheduleStatus = departureRequest.getScheduleStatus();
         if (scheduleStatus != Schedule.Status.CANCELED) {
             throw new InvalidDepartureRequest();
         }
         if (!publicId.startsWith("sch")) {
             throw new InvalidSchedulePublicId();
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+        if(user.getGrade() != User.Grade.ADMIN){
+            throw new InvalidUserGrade();
         }
 
         Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
@@ -75,8 +90,8 @@ public class DepartureService {
 
         List<String> phones = new ArrayList<>();
         for (Reservation reservation : reservations) {
-            User user = reservation.getUser();
-            phones.add(user.getPhone());
+            User reservationUser = reservation.getUser();
+            phones.add(reservationUser.getPhone());
         }
 
         List<MessageCommonDto> messageCommonDto = messageService.sendDepartureCanceledMessages(phones);
@@ -85,13 +100,18 @@ public class DepartureService {
     }
 
     //출항 연기
-    public DepartureResponse delay(String publicId, DepartureRequest departureRequest) {
+    public DepartureResponse delay(Long userId, String publicId, DepartureRequest departureRequest) {
         Schedule.Status scheduleStatus = departureRequest.getScheduleStatus();
         if (scheduleStatus != Schedule.Status.DELAYED) {
             throw new InvalidDepartureRequest();
         }
         if (!publicId.startsWith("sch")) {
             throw new InvalidSchedulePublicId();
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+        if(user.getGrade() != User.Grade.ADMIN){
+            throw new InvalidUserGrade();
         }
 
         Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
@@ -104,8 +124,8 @@ public class DepartureService {
 
         List<String> phones = new ArrayList<>();
         for (Reservation reservation : reservations) {
-            User user = reservation.getUser();
-            phones.add(user.getPhone());
+            User reservationUser = reservation.getUser();
+            phones.add(reservationUser.getPhone());
         }
 
         List<MessageCommonDto> messageCommonDto = messageService.sendDepartureDelayedMessages(phones);
