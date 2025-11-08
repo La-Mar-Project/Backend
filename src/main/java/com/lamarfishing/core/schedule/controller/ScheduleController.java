@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class ScheduleController {
     private final ScheduleService scheduleService;
 
+    /**
+     * 출항 일정 상세보기
+     */
     @GetMapping("/{schedule_public_id}")
     public ResponseEntity<ApiResponse<ScheduleDetailResponse>> getScheduleDetail(@PathVariable String publicId) {
         ScheduleDetailResponse scheduleDetailResponse = scheduleService.getScheduleDetail(publicId);
