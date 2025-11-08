@@ -44,7 +44,7 @@ public class ReservationPopupService {
     private final CouponRepository couponRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationPopupResponse getReservationPopup(Long userId, String grade, String publicId) {
+    public ReservationPopupResponse getReservationPopup(Long userId, String publicId) {
 
         ReservationUserDto reservationUserDto;
 
@@ -52,7 +52,8 @@ public class ReservationPopupService {
             throw new InvalidSchedulePublicId();
         }
 
-        User.Grade userGrade = parseUserGrade(grade);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+        User.Grade userGrade = user.getGrade();
 
         Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
         Ship ship = schedule.getShip();
@@ -64,11 +65,11 @@ public class ReservationPopupService {
 
         //비회원이라면
         if (userGrade == User.Grade.GUEST){
-            reservationUserDto = UserMapper.toReservationUserDto();
+            reservationUserDto = UserMapper.toReservationUserDto(); //비회원용 User.grade
             return ReservationPopupResponse.from(schedule, remainHeadCount, reservationUserDto, reservationShipDto);
         }
 
-        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+
 
         List<CouponCommonDto> couponCommonDtos = couponRepository.findByUserAndStatus(user, Coupon.Status.AVAILABLE)
                 .stream()
