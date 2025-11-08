@@ -8,13 +8,11 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 
 @Component
-@Order(3)
 @RequiredArgsConstructor
 public class ShipDummy {
 
     private final ShipRepository shipRepository;
 
-    @PostConstruct
     public void init() {
 
         if (shipRepository.count() > 0) {

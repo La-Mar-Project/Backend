@@ -20,7 +20,6 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 @Component
-@Order(5)
 @RequiredArgsConstructor
 public class ReservationDummy {
 
@@ -31,7 +30,6 @@ public class ReservationDummy {
 
     private final Random random = new Random();
 
-    @PostConstruct
     public void init() {
 
         if (reservationRepository.count() > 0) {

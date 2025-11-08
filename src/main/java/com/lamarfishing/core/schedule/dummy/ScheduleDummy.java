@@ -13,14 +13,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
-@Order(4)
 @RequiredArgsConstructor
 public class ScheduleDummy {
 
     private final ScheduleRepository scheduleRepository;
     private final ShipRepository shipRepository;
 
-    @PostConstruct
     public void init() {
 
         if (scheduleRepository.count() > 0) {

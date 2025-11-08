@@ -13,14 +13,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
-@Order(2)
 @RequiredArgsConstructor
 public class CouponDummy {
 
     private final CouponRepository couponRepository;
     private final UserRepository userRepository;
 
-    @PostConstruct
     public void init() {
         if (couponRepository.count() > 0) {
             return;

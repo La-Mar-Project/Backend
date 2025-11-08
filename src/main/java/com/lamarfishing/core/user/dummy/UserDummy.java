@@ -8,13 +8,11 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
-@Order(1)
 @RequiredArgsConstructor
 public class UserDummy {
 
     private final UserRepository userRepository;
 
-    @PostConstruct
     public void init(){
         if (userRepository.count() > 0) {
             return;
