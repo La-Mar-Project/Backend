@@ -1,36 +1,34 @@
 package com.lamarfishing.core.schedule.dto.response;
 
-import com.lamarfishing.core.coupon.domain.Coupon;
-import com.lamarfishing.core.coupon.dto.CouponCommonDto;
-import com.lamarfishing.core.coupon.mapper.CouponMapper;
 import com.lamarfishing.core.schedule.domain.Schedule;
-import com.lamarfishing.core.ship.domain.Ship;
-import com.lamarfishing.core.ship.dto.command.ShipDetailDto;
-import com.lamarfishing.core.ship.mapper.ShipMapper;
+import com.lamarfishing.core.ship.dto.command.ReservationShipDto;
+import com.lamarfishing.core.user.dto.command.ReservationUserDto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Builder
 public class ReservationPopupResponse {
-    private ShipDetailDto ship;
-    private Long scheduleId;
+    private ReservationShipDto ship;
+    private ReservationUserDto user;
+    private String schedulePublicId;
+    private Integer remainHeadCount;
     private LocalDateTime departure;
+    private DayOfWeek dayOfWeek;
     private Integer tide;
-    private List<CouponCommonDto> coupons;
 
-    public static ReservationPopupResponse from(Schedule schedule, Ship ship, List<Coupon> coupons) {
+    public static ReservationPopupResponse from(Schedule schedule,Integer remainHeadCount, ReservationUserDto user, ReservationShipDto ship) {
         return ReservationPopupResponse.builder()
-                .ship(ShipMapper.toShipDetailResponse(ship))
-                .scheduleId(schedule.getId())
+                .ship(ship)
+                .user(user)
+                .schedulePublicId(schedule.getPublicId())
+                .remainHeadCount(remainHeadCount)
                 .departure(schedule.getDeparture())
+                .dayOfWeek(schedule.getDeparture().getDayOfWeek())
                 .tide(schedule.getTide())
-                .coupons(coupons.stream()
-                        .map(CouponMapper::toCouponCommonDto)
-                        .toList())
                 .build();
     }
 }

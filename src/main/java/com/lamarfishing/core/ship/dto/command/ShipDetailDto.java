@@ -1,14 +1,17 @@
 package com.lamarfishing.core.ship.dto.command;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+/**
+ * 출항 일정 상세 조회에 사용되는 dto
+ */
+@Getter
 @Builder
 public class ShipDetailDto {
+
     private Long shipId;
     private String fishType;
     private Integer price;
-    private Integer maxHeadCount;
-    private String notification;
+
 }

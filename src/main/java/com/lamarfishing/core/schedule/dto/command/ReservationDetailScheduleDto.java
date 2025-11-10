@@ -1,16 +1,18 @@
 package com.lamarfishing.core.schedule.dto.command;
 
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 
-@Getter
+/**
+ * 예약 상세 조회에 사용되는 dto
+ */
+@Data
 @Builder
-public class ScheduleCommonDto {
-    private String schedulePublicId;
+public class ReservationDetailScheduleDto {
     private LocalDateTime departure;
+    private DayOfWeek dayOfWeek;
     private Integer tide;
-    private Integer remainCount;        //ship join 필요
-
 }

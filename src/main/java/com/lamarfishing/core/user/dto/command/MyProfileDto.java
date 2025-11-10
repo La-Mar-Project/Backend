@@ -1,6 +1,7 @@
 package com.lamarfishing.core.user.dto.command;
 
 import com.lamarfishing.core.coupon.domain.Coupon;
+import com.lamarfishing.core.coupon.dto.ProfileCouponDto;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,9 +17,9 @@ public class MyProfileDto {
     private String nickname;
     private Grade grade;
     private String phone;
-    private List<Coupon> coupons;
+    private List<ProfileCouponDto> coupons;
 
-    public MyProfileDto(String username, String nickname, Grade grade, String phone, List<Coupon> coupons) {
+    public MyProfileDto(String username, String nickname, Grade grade, String phone, List<ProfileCouponDto> coupons) {
         this.username = username;
         this.nickname = nickname;
         this.grade = grade;
