@@ -18,6 +18,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: image-tag
+          path: .
 
       - name: Read image tag
         run: echo "TAG=$(cat image-tag.txt)" >> $GITHUB_ENV
