@@ -2,6 +2,7 @@ package com.lamarfishing.core.user.domain;
 
 import com.lamarfishing.core.coupon.domain.Coupon;
 import com.lamarfishing.core.reservation.domain.Reservation;
+import com.lamarfishing.core.user.exception.InvalidUserGrade;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,7 +28,7 @@ public class User {
     private String nickname;
 
     public enum Grade {
-        BASIC, VIP, ADMIN
+        GUEST, BASIC, VIP, ADMIN
     }
 
     @Enumerated(EnumType.STRING)
@@ -46,5 +47,14 @@ public class User {
 
     public static User create(String username, String nickname, Grade grade, String phone) {
         return new User(username, nickname, grade, phone);
+    }
+
+    public void updateGuestInfo(String username, String nickname, String phone){
+        if (this.grade != Grade.GUEST) {
+            throw new InvalidUserGrade();
+        }
+        this.username = username;
+        this.nickname = nickname;
+        this.phone = phone;
     }
 }

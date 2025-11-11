@@ -1,5 +1,7 @@
 package com.lamarfishing.core.reservation.domain;
 
+import com.lamarfishing.core.common.uuid.Uuid;
+import com.lamarfishing.core.coupon.domain.Coupon;
 import com.lamarfishing.core.schedule.domain.Schedule;
 import com.lamarfishing.core.user.domain.User;
 import jakarta.persistence.*;
@@ -7,6 +9,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -17,6 +21,9 @@ public class Reservation {
     @Id @GeneratedValue
     @Column(name = "reservation_id")
     private Long id;
+
+    @Column(name = "reservation_public_id", unique = true, nullable = false, updatable = false)
+    private String publicId;
 
     @Column(name = "reservation_head_count")
     private int headCount;
@@ -46,17 +53,23 @@ public class Reservation {
     @JoinColumn(name = "schedule_id")
     private Schedule schedule;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coupon_id")
+    private Coupon coupon;
+
     @Builder
-    private Reservation(int headCount, String request, int totalPrice, Process process, User user, Schedule schedule) {
+    private Reservation(int headCount, String request, int totalPrice, Process process, User user, Schedule schedule, Coupon coupon) {
+        this.publicId = "res"+Uuid.generateShortUUID();
         this.headCount = headCount;
         this.request = request;
         this.totalPrice = totalPrice;
         this.process = process;
         this.user = user;
         this.schedule = schedule;
+        this.coupon = coupon;
     }
 
-    public static Reservation create(int headCount, String request, int totalPrice, Process process, User user, Schedule schedule) {
+    public static Reservation create(int headCount, String request, int totalPrice, Process process, User user, Schedule schedule, Coupon coupon) {
         return Reservation.builder()
                 .headCount(headCount)
                 .request(request)
@@ -64,6 +77,7 @@ public class Reservation {
                 .process(process)
                 .user(user)
                 .schedule(schedule)
+                .coupon(coupon)
                 .build();
     }
 }
