@@ -27,13 +27,20 @@ public class ScheduleController {
     /**
      * 출항 일정 생성하기
      */
+//    @PostMapping
+//    public ResponseEntity<ApiResponse<Void>> createSchedule(@RequestHeader Long userId,
+//                                                            @RequestBody ScheduleCreateRequest scheduleCreateRequest) {
+//        scheduleService.createSchedule(userId,scheduleCreateRequest);
+//
+//        return ResponseEntity.ok(ApiResponse.success("출항 일정 생성에 성공하였습니다."));
+//
+//    }
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> createSchedule(@RequestHeader Long userId,
-                                                            @RequestBody ScheduleCreateRequest scheduleCreateRequest) {
+    public ResponseEntity<ApiResponse<Void>> createSchedule(@RequestBody ScheduleCreateRequest scheduleCreateRequest) {
+        Long userId = 2L;
         scheduleService.createSchedule(userId,scheduleCreateRequest);
 
         return ResponseEntity.ok(ApiResponse.success("출항 일정 생성에 성공하였습니다."));
-
 
     }
 }
