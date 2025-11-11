@@ -7,13 +7,16 @@ import com.lamarfishing.core.schedule.domain.Schedule;
 import com.lamarfishing.core.schedule.dto.command.ScheduleDetailDto;
 import com.lamarfishing.core.schedule.dto.request.ScheduleCreateRequest;
 import com.lamarfishing.core.schedule.dto.response.ScheduleDetailResponse;
+import com.lamarfishing.core.schedule.exception.DuplicateSchedule;
 import com.lamarfishing.core.schedule.exception.InvalidSchedulePublicId;
 import com.lamarfishing.core.schedule.exception.ScheduleNotFound;
 import com.lamarfishing.core.schedule.mapper.ScheduleMapper;
 import com.lamarfishing.core.schedule.repository.ScheduleRepository;
 import com.lamarfishing.core.ship.domain.Ship;
 import com.lamarfishing.core.ship.dto.command.ShipDetailDto;
+import com.lamarfishing.core.ship.exception.ShipNotFound;
 import com.lamarfishing.core.ship.mapper.ShipMapper;
+import com.lamarfishing.core.ship.repository.ShipRepository;
 import com.lamarfishing.core.user.domain.User;
 import com.lamarfishing.core.user.exception.InvalidUserGrade;
 import com.lamarfishing.core.user.exception.UserNotFound;
@@ -32,6 +35,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
+    private final ShipRepository shipRepository;
 
     public ScheduleDetailResponse getScheduleDetail(String publicId){
         if (!publicId.startsWith("sch")) {
@@ -55,6 +59,7 @@ public class ScheduleService {
         return scheduleDetailResponse;
     }
 
+    @Transactional
     public Void createSchedule(Long userId, ScheduleCreateRequest scheduleCreateRequest){
         User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
         if(user.getGrade()!=User.Grade.ADMIN){
@@ -66,11 +71,15 @@ public class ScheduleService {
         Long shipId = scheduleCreateRequest.getShipId();
         Schedule.Type scheduleType = scheduleCreateRequest.getScheduleType();
 
+        Ship ship = shipRepository.findById(shipId).orElseThrow(ShipNotFound::new);
+        Integer maxHeadCount = ship.getMaxHeadCount();
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)){
             //중복되는 날짜가 있음
             if(!scheduleRepository.existsByDepartureBetween(date.atStartOfDay(),date.atTime(23,59,59)){
-                throw new
+                throw new DuplicateSchedule();
             }
+            Schedule schedule = Schedule.create(date.atTime(4,0,0),)
+
         }
 
     }
