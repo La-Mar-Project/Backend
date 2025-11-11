@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     Optional<Schedule> findByPublicId(String publicId);
-    boolean existsByDepartureBetween(LocalDateTime start, LocalDateTime end);
+    Optional<Schedule> findFirstByDepartureBetween(LocalDateTime start, LocalDateTime end);
 }

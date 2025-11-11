@@ -26,7 +26,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -73,11 +75,21 @@ public class ScheduleService {
 
         Ship ship = shipRepository.findById(shipId).orElseThrow(ShipNotFound::new);
         Integer maxHeadCount = ship.getMaxHeadCount();
+        //중복되는 날짜가 있으면 덮어쓰기, 없으면 생성
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)){
-            //중복되는 날짜가 있음
-            if(scheduleRepository.existsByDepartureBetween(date.atStartOfDay(),date.atTime(23,59,59))){
-                throw new DuplicateSchedule();
+            LocalDateTime startOfDay = date.atStartOfDay();
+            LocalDateTime endOfDay = date.atTime(23, 59, 59);
+
+            Optional<Schedule> existing = scheduleRepository
+                    .findFirstByDepartureBetween(startOfDay, endOfDay);
+
+            //이미 날짜가 있다면
+            if (existing.isPresent()) {
+                Schedule schedule = existing.get();
+                schedule.updateType(scheduleType);
+                continue;
             }
+
             int tide = (date.getDayOfYear() % 15) + 1;
             Schedule schedule = Schedule.create(date.atTime(4,0,0),maxHeadCount,tide,Schedule.Status.WAITING,scheduleType,ship);
             scheduleRepository.save(schedule);

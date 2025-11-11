@@ -104,6 +104,10 @@ public class Schedule {
         this.currentHeadCount -= headCount;
     }
 
+    public void updateType(Schedule.Type newType) {
+        this.type = newType;
+    }
+
     public void changeStatus(Status status) {
         this.status = status;
     }
