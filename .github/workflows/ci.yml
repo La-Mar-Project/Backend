@@ -1,10 +1,10 @@
 # workflow name
 name: CI Pipeline
 
-#dev branch에 push시 자동 실행
+#main branch에 push시 자동 실행
 on:
   push:
-    branches: ["dev"]
+    branches: ["main"]
 
 jobs:
   ci:
@@ -62,9 +62,11 @@ jobs:
       - name: Save image tag
         run: echo "1.1.${{ github.run_number }}" > image-tag.txt
 
-      # 아티팩트 업로드
-      - name: Upload image tag artifact
-        uses: actions/upload-artifact@v4
+      # CD 호출
+      - name: Trigger CD Pipeline
+        uses: peter-evans/repository-dispatch@v2
         with:
-          name: image-tag
-          path: image-tag.txt
+          token: ${{ secrets.PAT_TOKEN }}
+          repository: La-Mar-Project/Backend
+          event-type: deploy
+          client-payload: '{"tag":"1.1.${{ github.run_number }}"}'
