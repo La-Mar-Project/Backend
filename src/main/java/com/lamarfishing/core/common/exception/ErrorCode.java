@@ -21,6 +21,7 @@ public enum ErrorCode {
      * schedule
      */
     SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "Schedule not found"),
+    DUPLICATE_SCHEDULE(HttpStatus.BAD_REQUEST, "Duplicate schedule"),
     /**
      * reservation
      */

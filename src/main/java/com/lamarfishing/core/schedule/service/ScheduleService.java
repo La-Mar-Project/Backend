@@ -5,6 +5,7 @@ import com.lamarfishing.core.reservation.mapper.ReservationMapper;
 import com.lamarfishing.core.reservation.repository.ReservationRepository;
 import com.lamarfishing.core.schedule.domain.Schedule;
 import com.lamarfishing.core.schedule.dto.command.ScheduleDetailDto;
+import com.lamarfishing.core.schedule.dto.request.ScheduleCreateRequest;
 import com.lamarfishing.core.schedule.dto.response.ScheduleDetailResponse;
 import com.lamarfishing.core.schedule.exception.InvalidSchedulePublicId;
 import com.lamarfishing.core.schedule.exception.ScheduleNotFound;
@@ -13,10 +14,15 @@ import com.lamarfishing.core.schedule.repository.ScheduleRepository;
 import com.lamarfishing.core.ship.domain.Ship;
 import com.lamarfishing.core.ship.dto.command.ShipDetailDto;
 import com.lamarfishing.core.ship.mapper.ShipMapper;
+import com.lamarfishing.core.user.domain.User;
+import com.lamarfishing.core.user.exception.InvalidUserGrade;
+import com.lamarfishing.core.user.exception.UserNotFound;
+import com.lamarfishing.core.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -25,6 +31,7 @@ import java.util.List;
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ReservationRepository reservationRepository;
+    private final UserRepository userRepository;
 
     public ScheduleDetailResponse getScheduleDetail(String publicId){
         if (!publicId.startsWith("sch")) {
@@ -48,6 +55,24 @@ public class ScheduleService {
         return scheduleDetailResponse;
     }
 
+    public Void createSchedule(Long userId, ScheduleCreateRequest scheduleCreateRequest){
+        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+        if(user.getGrade()!=User.Grade.ADMIN){
+            throw new InvalidUserGrade();
+        }
 
+        LocalDate startDate = scheduleCreateRequest.getStartDate();
+        LocalDate endDate = scheduleCreateRequest.getEndDate();
+        Long shipId = scheduleCreateRequest.getShipId();
+        Schedule.Type scheduleType = scheduleCreateRequest.getScheduleType();
+
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)){
+            //중복되는 날짜가 있음
+            if(!scheduleRepository.existsByDepartureBetween(date.atStartOfDay(),date.atTime(23,59,59)){
+                throw new
+            }
+        }
+
+    }
 
 }
