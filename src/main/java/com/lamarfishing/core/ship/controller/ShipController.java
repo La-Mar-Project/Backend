@@ -2,6 +2,7 @@ package com.lamarfishing.core.ship.controller;
 
 import com.lamarfishing.core.common.ApiResponse;
 import com.lamarfishing.core.ship.dto.request.CreateShipRequest;
+import com.lamarfishing.core.ship.dto.request.UpdateShipRequest;
 import com.lamarfishing.core.ship.dto.response.ShipListResponse;
 import com.lamarfishing.core.ship.service.ShipService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class ShipController {
      * 배 리스트 조회 / 스케쥴 생성할 때 필요한 조회
      */
 //    @GetMapping
-//    public ResponseEntity<ApiResponse<ShipListResponse>> getShips(@RequestParam Long userId){
+//    public ResponseEntity<ApiResponse<ShipListResponse>> getShips(@RequestHeader Long userId){
 //
 //        ShipListResponse shipListResponse = shipService.getShips(userId);
 //
@@ -47,10 +48,31 @@ public class ShipController {
 //    }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> createShip(CreateShipRequest request){
+    public ResponseEntity<ApiResponse<Void>> createShip(@RequestBody CreateShipRequest request){
 
         Long userId = 2L;
         shipService.createShip(userId, request);
         return ResponseEntity.ok(ApiResponse.success("배 생성에 성공하였습니다."));
+    }
+
+    /**
+     * 배 수정 api
+     */
+//    @PutMapping("/{shipId}")
+//    public ResponseEntity<ApiResponse<Void>>  updateShip(@RequestHeader Long userId,
+//                                                         @RequestBody UpdateShipRequest request,
+//                                                         @PathVariable Long shipId){
+//        shipService.updateShip(userId, shipId, request);
+//
+//        return ResponseEntity.ok(ApiResponse.success("배 수정에 성공하였습니다."));
+//    }
+
+    @PutMapping("/{shipId}")
+    public ResponseEntity<ApiResponse<Void>> updateShip(@RequestBody UpdateShipRequest request,
+                                                        @PathVariable Long shipId){
+        Long userId = 2L;
+        shipService.updateShip(userId, shipId, request);
+
+        return ResponseEntity.ok(ApiResponse.success("배 수정에 성공"));
     }
 }
