@@ -50,7 +50,7 @@ public class ShipController {
     public ResponseEntity<ApiResponse<Void>> createShip(CreateShipRequest request){
 
         Long userId = 2L;
-        shipService.CreateShip(userId, request);
+        shipService.createShip(userId, request);
         return ResponseEntity.ok(ApiResponse.success("배 생성에 성공하였습니다."));
     }
 }

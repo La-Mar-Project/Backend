@@ -3,7 +3,9 @@ package com.lamarfishing.core.ship.service;
 import com.lamarfishing.core.ship.domain.Ship;
 import com.lamarfishing.core.ship.dto.command.ShipDetailDto;
 import com.lamarfishing.core.ship.dto.request.CreateShipRequest;
+import com.lamarfishing.core.ship.dto.request.UpdateShipRequest;
 import com.lamarfishing.core.ship.dto.response.ShipListResponse;
+import com.lamarfishing.core.ship.exception.ShipNotFound;
 import com.lamarfishing.core.ship.mapper.ShipMapper;
 import com.lamarfishing.core.ship.repository.ShipRepository;
 import com.lamarfishing.core.user.domain.User;
@@ -24,10 +26,10 @@ public class ShipService {
     private final ShipRepository shipRepository;
     private final UserRepository userRepository;
 
-    public ShipListResponse getShips(Long userId){
+    public ShipListResponse getShips(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
 
-        if(user.getGrade() != User.Grade.ADMIN){
+        if (user.getGrade() != User.Grade.ADMIN) {
             throw new InvalidUserGrade();
         }
 
@@ -40,10 +42,10 @@ public class ShipService {
     }
 
     @Transactional
-    public void CreateShip(Long userId, CreateShipRequest request) {
+    public void createShip(Long userId, CreateShipRequest request) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
 
-        if(user.getGrade() != User.Grade.ADMIN){
+        if (user.getGrade() != User.Grade.ADMIN) {
             throw new InvalidUserGrade();
         }
 
@@ -55,5 +57,29 @@ public class ShipService {
         Ship ship = Ship.create(maxHeadCount, fishType, price, notification); // 객체 메서드를 객체에 받는 코드
         shipRepository.save(ship);  // DB에 저장
 
+    }
+
+    @Transactional
+    public void updateShip(Long userId, Long shipId, UpdateShipRequest request) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+
+        if (user.getGrade() != User.Grade.ADMIN) {
+            throw new InvalidUserGrade();
+        }
+
+        Ship ship = shipRepository.findById(shipId).orElseThrow(ShipNotFound::new);
+
+        if (request.getFishType() != null){
+            ship.updateFishType(request.getFishType());
+        }
+        if(request.getPrice() != null){
+            ship.updatePrice(request.getPrice());
+        }
+       if(request.getMaxHeadCount() != null){
+           ship.updateMaxHeadCount(request.getMaxHeadCount());
+       }
+       if(request.getNotification() !=null){
+           ship.updateNotification(request.getNotification());
+       }
     }
 }
