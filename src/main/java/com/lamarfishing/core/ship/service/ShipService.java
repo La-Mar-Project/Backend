@@ -3,6 +3,7 @@ package com.lamarfishing.core.ship.service;
 import com.lamarfishing.core.ship.domain.Ship;
 import com.lamarfishing.core.ship.dto.command.ShipDetailDto;
 import com.lamarfishing.core.ship.dto.request.CreateShipRequest;
+import com.lamarfishing.core.ship.dto.request.DeleteShipRequest;
 import com.lamarfishing.core.ship.dto.request.UpdateShipRequest;
 import com.lamarfishing.core.ship.dto.response.ShipListResponse;
 import com.lamarfishing.core.ship.exception.ShipNotFound;
@@ -81,5 +82,22 @@ public class ShipService {
        if(request.getNotification() !=null){
            ship.updateNotification(request.getNotification());
        }
+    }
+
+    @Transactional
+    public void deleteShip(Long userId, DeleteShipRequest request) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+
+        if (user.getGrade() != User.Grade.ADMIN) {
+            throw new InvalidUserGrade();
+        }
+
+        List<Long> shipIds = request.getShipIds();
+        List<Ship> ships = shipRepository.findAllById(shipIds);
+
+        if (ships.size() != shipIds.size()) {
+            throw new ShipNotFound();
+        }
+        shipRepository.deleteAllInBatch(ships);
     }
 }

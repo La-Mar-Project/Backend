@@ -2,6 +2,7 @@ package com.lamarfishing.core.ship.controller;
 
 import com.lamarfishing.core.common.ApiResponse;
 import com.lamarfishing.core.ship.dto.request.CreateShipRequest;
+import com.lamarfishing.core.ship.dto.request.DeleteShipRequest;
 import com.lamarfishing.core.ship.dto.request.UpdateShipRequest;
 import com.lamarfishing.core.ship.dto.response.ShipListResponse;
 import com.lamarfishing.core.ship.service.ShipService;
@@ -74,5 +75,24 @@ public class ShipController {
         shipService.updateShip(userId, shipId, request);
 
         return ResponseEntity.ok(ApiResponse.success("배 수정에 성공"));
+    }
+
+    /**
+     * 배 삭제 api
+     */
+//    @PostMapping("/delete")
+//    public ResponseEntity<ApiResponse<Void>> deleteShip(@RequestHeader Long userId,
+//                                                        @RequestBody DeleteShipRequest request){
+//        shipService.deleteShip(userId, request);
+//
+//        return ResponseEntity.ok(ApiResponse.success("배 삭제에 성공하였습니다."));
+//    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<ApiResponse<Void>> deleteShip(@RequestBody DeleteShipRequest request){
+        Long userId = 2L;
+        shipService.deleteShip(userId, request);
+
+        return ResponseEntity.ok(ApiResponse.success("배 삭제에 성공하였습니다."));
     }
 }
