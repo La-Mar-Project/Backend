@@ -16,7 +16,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
@@ -28,6 +28,6 @@ logging:
 
 # Solapi SMS 설정
 solapi:
-  api-key: NCSVUSROTKXO0FLN
-  api-secret: 9AE6KAWRMHLIIC5TIJTZXGQHP8UAHCKU
-  sender: 01062647243
+  api-key: ${SOLAPI_API_KEY}
+  api-secret: ${SOLAPI_API_SECRET}
+  sender: ${SOLAPI_SENDER_NUMBER}

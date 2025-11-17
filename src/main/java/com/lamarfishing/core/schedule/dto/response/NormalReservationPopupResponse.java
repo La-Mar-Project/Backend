@@ -2,26 +2,30 @@ package com.lamarfishing.core.schedule.dto.response;
 
 import com.lamarfishing.core.schedule.domain.Schedule;
 import com.lamarfishing.core.ship.dto.command.ReservationShipDto;
-import com.lamarfishing.core.user.dto.command.ReservationUserDto;
+import com.lamarfishing.core.user.dto.command.EarlyReservationUserDto;
+import com.lamarfishing.core.user.dto.command.NormalReservationUserDto;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 
+/**
+ * 일반예약 팝업 조회
+ */
 @Data
 @Builder
-public class ReservationPopupResponse {
+public class NormalReservationPopupResponse {
     private ReservationShipDto ship;
-    private ReservationUserDto user;
+    private NormalReservationUserDto user;
     private String schedulePublicId;
     private Integer remainHeadCount;
     private LocalDateTime departure;
     private DayOfWeek dayOfWeek;
     private Integer tide;
 
-    public static ReservationPopupResponse from(Schedule schedule,Integer remainHeadCount, ReservationUserDto user, ReservationShipDto ship) {
-        return ReservationPopupResponse.builder()
+    public static NormalReservationPopupResponse from(Schedule schedule, Integer remainHeadCount, NormalReservationUserDto user, ReservationShipDto ship) {
+        return NormalReservationPopupResponse.builder()
                 .ship(ship)
                 .user(user)
                 .schedulePublicId(schedule.getPublicId())
