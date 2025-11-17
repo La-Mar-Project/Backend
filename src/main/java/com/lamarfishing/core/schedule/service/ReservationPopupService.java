@@ -10,18 +10,22 @@ import com.lamarfishing.core.reservation.domain.Reservation;
 import com.lamarfishing.core.reservation.mapper.ReservationMapper;
 import com.lamarfishing.core.reservation.repository.ReservationRepository;
 import com.lamarfishing.core.schedule.domain.Schedule;
+import com.lamarfishing.core.schedule.domain.Type;
 import com.lamarfishing.core.schedule.dto.request.ReservationPopupRequest;
+import com.lamarfishing.core.schedule.dto.response.EarlyReservationPopupResponse;
+import com.lamarfishing.core.schedule.dto.response.NormalReservationPopupResponse;
 import com.lamarfishing.core.schedule.dto.response.ReservationCreateResponse;
-import com.lamarfishing.core.schedule.dto.response.ReservationPopupResponse;
+import com.lamarfishing.core.schedule.exception.InvalidHeadCount;
 import com.lamarfishing.core.schedule.exception.InvalidSchedulePublicId;
 import com.lamarfishing.core.schedule.exception.ScheduleNotFound;
+import com.lamarfishing.core.schedule.exception.UnauthorizedPopupAccess;
 import com.lamarfishing.core.schedule.repository.ScheduleRepository;
 import com.lamarfishing.core.ship.domain.Ship;
 import com.lamarfishing.core.ship.dto.command.ReservationShipDto;
 import com.lamarfishing.core.ship.mapper.ShipMapper;
 import com.lamarfishing.core.user.domain.User;
-import com.lamarfishing.core.user.dto.command.ReservationUserDto;
-import com.lamarfishing.core.user.exception.InvalidUserGrade;
+import com.lamarfishing.core.user.dto.command.EarlyReservationUserDto;
+import com.lamarfishing.core.user.dto.command.NormalReservationUserDto;
 import com.lamarfishing.core.user.exception.UserNotFound;
 import com.lamarfishing.core.user.mapper.UserMapper;
 import com.lamarfishing.core.user.repository.UserRepository;
@@ -29,6 +33,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -44,38 +50,62 @@ public class ReservationPopupService {
     private final CouponRepository couponRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationPopupResponse getReservationPopup(Long userId, String publicId) {
-
-        ReservationUserDto reservationUserDto;
-
+    /**
+     * 선예약 팝업 조회
+     */
+    public EarlyReservationPopupResponse getEarlyReservationPopup(Long userId, String publicId) {
         if (!publicId.startsWith("sch")) {
             throw new InvalidSchedulePublicId();
         }
 
         User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
-        User.Grade userGrade = user.getGrade();
-
-        Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
-        Ship ship = schedule.getShip();
-
-        int currentHeadCount = schedule.getCurrentHeadCount();
-        int remainHeadCount = ship.getMaxHeadCount() - currentHeadCount;
-
-        ReservationShipDto reservationShipDto = ShipMapper.toReservationShipDto(ship);
-
-        //비회원이라면
-        if (userGrade == User.Grade.GUEST){
-            reservationUserDto = UserMapper.toReservationUserDto(); //비회원용
-            return ReservationPopupResponse.from(schedule, remainHeadCount, reservationUserDto, reservationShipDto);
+        if (user.getGrade() == User.Grade.GUEST){
+            throw new UnauthorizedPopupAccess();
         }
 
-        List<CouponCommonDto> couponCommonDtos = couponRepository.findByUserAndStatus(user, Coupon.Status.AVAILABLE)
+        Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
+        if (schedule.getType() != Type.EARLY){
+            throw new UnauthorizedPopupAccess();
+        }
+
+        ReservationShipDto reservationShipDto = ShipMapper.toReservationShipDto(schedule.getShip());
+        List<CouponCommonDto> coupons = couponRepository.findByUserAndStatusAndType(user, Coupon.Status.AVAILABLE,getCouponTypeByDeparture(schedule.getDeparture()))
                 .stream()
                 .map(CouponMapper::toCouponCommonDto)
                 .toList();
+        EarlyReservationUserDto earlyReservationUserDto = UserMapper.toEarlyReservationUserDto(user,coupons);
+        Integer remainHeadCount = schedule.getShip().getMaxHeadCount() - schedule.getCurrentHeadCount();
 
-        reservationUserDto = UserMapper.toReservationUserDto(user, couponCommonDtos);
-        return ReservationPopupResponse.from(schedule, remainHeadCount, reservationUserDto, reservationShipDto);
+        return EarlyReservationPopupResponse.from(schedule,remainHeadCount, earlyReservationUserDto,reservationShipDto);
+    }
+
+    /**
+     * 일반예약 팝업 조회
+     */
+    public NormalReservationPopupResponse getNormalReservationPopup(Long userId, String publicId) {
+        if (!publicId.startsWith("sch")) {
+            throw new InvalidSchedulePublicId();
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+
+        Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
+        if (schedule.getType() != Type.NORMAL){
+            throw new UnauthorizedPopupAccess();
+        }
+
+        ReservationShipDto reservationShipDto = ShipMapper.toReservationShipDto(schedule.getShip());
+        Integer remainHeadCount = schedule.getShip().getMaxHeadCount() - schedule.getCurrentHeadCount();
+
+        if (user.getGrade() == User.Grade.GUEST){
+            NormalReservationUserDto normalReservationUserDto = UserMapper.toNormalReservationUserDto();
+            return NormalReservationPopupResponse.from(schedule,remainHeadCount, normalReservationUserDto,reservationShipDto);
+        }
+
+        NormalReservationUserDto normalReservationUserDto = UserMapper.toNormalReservationUserDto(user);
+        return NormalReservationPopupResponse.from(schedule,remainHeadCount, normalReservationUserDto,reservationShipDto);
+
+
     }
 
     @Transactional
@@ -90,6 +120,9 @@ public class ReservationPopupService {
         Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
         Ship ship = schedule.getShip();
         int headCount = reservationPopupRequest.getHeadCount();
+        if(headCount + schedule.getCurrentHeadCount() > schedule.getShip().getMaxHeadCount()){
+            throw new InvalidHeadCount();
+        }
         int totalPrice = ship.getPrice() * headCount;
         String userRequest = reservationPopupRequest.getRequest();
 
@@ -113,12 +146,22 @@ public class ReservationPopupService {
             coupon.use();
         }
 
+        schedule.IncreaseCurrentHeadCount(headCount);
         Reservation reservation = Reservation.create(headCount,userRequest,totalPrice, Reservation.Process.RESERVE_COMPLETED,user,schedule,coupon);
         reservationRepository.save(reservation);
-        schedule.decreaseCurrentHeadCount(headCount);
+
 
         ReservationCreateResponse reservationCreateResponse = ReservationMapper.toReservationCreateResponse(reservation);
 
         return reservationCreateResponse;
+    }
+
+    private Coupon.Type getCouponTypeByDeparture(LocalDateTime departure) {
+        DayOfWeek day = departure.getDayOfWeek();
+
+        if (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) {
+            return Coupon.Type.WEEKEND;
+        }
+        return Coupon.Type.WEEKDAY;
     }
 }

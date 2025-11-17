@@ -29,6 +29,8 @@ public enum ErrorCode {
     SCHEDULE_HAS_RESERVATIONS(HttpStatus.BAD_REQUEST, "Schedule has reservation"),
     INVALID_DEPARTURE_TIME(HttpStatus.BAD_REQUEST, "Invalid departure time"),
     INVALID_SCHEDULE_TYPE(HttpStatus.BAD_REQUEST, "Invalid schedule type"),
+    UNAUTHORIZED_SCHEDULE_ACCESS(HttpStatus.UNAUTHORIZED, "Unauthorized schedule access"),
+    INVALID_HEADCOUNT(HttpStatus.BAD_REQUEST, "Invalid headcount"),
     /**
      * reservation
      */
