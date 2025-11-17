@@ -10,9 +10,9 @@ import com.lamarfishing.core.reservation.domain.Reservation;
 import com.lamarfishing.core.reservation.mapper.ReservationMapper;
 import com.lamarfishing.core.reservation.repository.ReservationRepository;
 import com.lamarfishing.core.schedule.domain.Schedule;
-import com.lamarfishing.core.schedule.dto.request.ReservationPopupRequest;
+import com.lamarfishing.core.schedule.dto.request.EarlyReservationPopupRequest;
+import com.lamarfishing.core.schedule.dto.response.EarlyReservationPopupResponse;
 import com.lamarfishing.core.schedule.dto.response.ReservationCreateResponse;
-import com.lamarfishing.core.schedule.dto.response.ReservationPopupResponse;
 import com.lamarfishing.core.schedule.exception.InvalidSchedulePublicId;
 import com.lamarfishing.core.schedule.exception.ScheduleNotFound;
 import com.lamarfishing.core.schedule.repository.ScheduleRepository;
@@ -21,7 +21,6 @@ import com.lamarfishing.core.ship.dto.command.ReservationShipDto;
 import com.lamarfishing.core.ship.mapper.ShipMapper;
 import com.lamarfishing.core.user.domain.User;
 import com.lamarfishing.core.user.dto.command.ReservationUserDto;
-import com.lamarfishing.core.user.exception.InvalidUserGrade;
 import com.lamarfishing.core.user.exception.UserNotFound;
 import com.lamarfishing.core.user.mapper.UserMapper;
 import com.lamarfishing.core.user.repository.UserRepository;
@@ -44,42 +43,22 @@ public class ReservationPopupService {
     private final CouponRepository couponRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationPopupResponse getReservationPopup(Long userId, String publicId) {
-
-        ReservationUserDto reservationUserDto;
-
+    /**
+     * 선예약 팝업 조회
+     */
+    public EarlyReservationPopupResponse getReservationPopup(Long userId, String publicId) {
         if (!publicId.startsWith("sch")) {
             throw new InvalidSchedulePublicId();
         }
 
         User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
-        User.Grade userGrade = user.getGrade();
-
-        Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
-        Ship ship = schedule.getShip();
-
-        int currentHeadCount = schedule.getCurrentHeadCount();
-        int remainHeadCount = ship.getMaxHeadCount() - currentHeadCount;
-
-        ReservationShipDto reservationShipDto = ShipMapper.toReservationShipDto(ship);
-
-        //비회원이라면
-        if (userGrade == User.Grade.GUEST){
-            reservationUserDto = UserMapper.toReservationUserDto(); //비회원용
-            return ReservationPopupResponse.from(schedule, remainHeadCount, reservationUserDto, reservationShipDto);
+        if (user.getGrade() == User.Grade.GUEST){
+            throw new UnauthorizedPopupAccess();
         }
-
-        List<CouponCommonDto> couponCommonDtos = couponRepository.findByUserAndStatus(user, Coupon.Status.AVAILABLE)
-                .stream()
-                .map(CouponMapper::toCouponCommonDto)
-                .toList();
-
-        reservationUserDto = UserMapper.toReservationUserDto(user, couponCommonDtos);
-        return ReservationPopupResponse.from(schedule, remainHeadCount, reservationUserDto, reservationShipDto);
     }
 
     @Transactional
-    public ReservationCreateResponse createReservation(Long userId, String publicId, ReservationPopupRequest reservationPopupRequest) {
+    public ReservationCreateResponse createReservation(Long userId, String publicId, EarlyReservationPopupRequest earlyReservationPopupRequest) {
         if (!publicId.startsWith("sch")) {
             throw new InvalidSchedulePublicId();
         }
@@ -89,22 +68,22 @@ public class ReservationPopupService {
 
         Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
         Ship ship = schedule.getShip();
-        int headCount = reservationPopupRequest.getHeadCount();
+        int headCount = earlyReservationPopupRequest.getHeadCount();
         int totalPrice = ship.getPrice() * headCount;
-        String userRequest = reservationPopupRequest.getRequest();
+        String userRequest = earlyReservationPopupRequest.getRequest();
 
         //비회원이라면
         if (userGrade == User.Grade.GUEST) {
-            String username = reservationPopupRequest.getUsername();
-            String nickname = reservationPopupRequest.getNickname();
-            String phone = reservationPopupRequest.getPhone();
+            String username = earlyReservationPopupRequest.getUsername();
+            String nickname = earlyReservationPopupRequest.getNickname();
+            String phone = earlyReservationPopupRequest.getPhone();
             //게스트 업데이트
             user.updateGuestInfo(username, nickname, phone);
         }
 
         Coupon coupon = null;
-        if (reservationPopupRequest.getCouponId() != null) {
-            coupon = couponRepository.findById(reservationPopupRequest.getCouponId())
+        if (earlyReservationPopupRequest.getCouponId() != null) {
+            coupon = couponRepository.findById(earlyReservationPopupRequest.getCouponId())
                     .orElseThrow(CouponNotFound::new);
 
             if (!coupon.getUser().equals(user)) {

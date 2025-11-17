@@ -7,21 +7,18 @@ import com.lamarfishing.core.coupon.repository.CouponRepository;
 import com.lamarfishing.core.reservation.domain.Reservation;
 import com.lamarfishing.core.reservation.repository.ReservationRepository;
 import com.lamarfishing.core.schedule.domain.Schedule;
-import com.lamarfishing.core.schedule.dto.request.ReservationPopupRequest;
+import com.lamarfishing.core.schedule.dto.request.EarlyReservationPopupRequest;
+import com.lamarfishing.core.schedule.dto.response.EarlyReservationPopupResponse;
 import com.lamarfishing.core.schedule.dto.response.ReservationCreateResponse;
-import com.lamarfishing.core.schedule.dto.response.ReservationPopupResponse;
 import com.lamarfishing.core.schedule.exception.InvalidSchedulePublicId;
 import com.lamarfishing.core.schedule.repository.ScheduleRepository;
 import com.lamarfishing.core.ship.domain.Ship;
 import com.lamarfishing.core.user.domain.User;
-import com.lamarfishing.core.user.exception.InvalidUserGrade;
 import com.lamarfishing.core.user.exception.UserNotFound;
 import com.lamarfishing.core.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -112,7 +109,7 @@ class ReservationPopupServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(couponRepository.findByUserAndStatus(user, Coupon.Status.AVAILABLE)).thenReturn(couponEntities);
 
-        ReservationPopupResponse response =
+        EarlyReservationPopupResponse response =
                 reservationPopupService.getReservationPopup(userId, publicId);
 
         //then
@@ -159,7 +156,7 @@ class ReservationPopupServiceTest {
         when(scheduleRepository.findByPublicId(publicId)).thenReturn(Optional.of(schedule));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        ReservationPopupResponse response =
+        EarlyReservationPopupResponse response =
                 reservationPopupService.getReservationPopup(userId, publicId);
 
         //then
@@ -230,7 +227,7 @@ class ReservationPopupServiceTest {
         when(reservationRepository.save(any()))
                 .thenAnswer(invocation -> invocation.getArgument(0));
         when(couponRepository.findById(couponId)).thenReturn(Optional.of(coupon));
-        ReservationPopupRequest request = ReservationPopupRequest.builder()
+        EarlyReservationPopupRequest request = EarlyReservationPopupRequest.builder()
                 .headCount(2)
                 .request("내가 왕이다.")
                 .couponId(coupon.getId())
@@ -283,7 +280,7 @@ class ReservationPopupServiceTest {
         when(reservationRepository.save(any()))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        ReservationPopupRequest request = ReservationPopupRequest.builder()
+        EarlyReservationPopupRequest request = EarlyReservationPopupRequest.builder()
                 .headCount(2)
                 .request("내가 왕이다.")
                 .couponId(coupon.getId())
@@ -320,7 +317,7 @@ class ReservationPopupServiceTest {
         //coupon id 강제 세팅
         ReflectionTestUtils.setField(coupon, "id", 1L);
 
-        ReservationPopupRequest request = ReservationPopupRequest.builder()
+        EarlyReservationPopupRequest request = EarlyReservationPopupRequest.builder()
                 .headCount(2)
                 .request("내가 왕이다.")
                 .couponId(coupon.getId())

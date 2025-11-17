@@ -9,9 +9,12 @@ import lombok.Data;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 
+/**
+ * 선예약 팝업 조회
+ */
 @Data
 @Builder
-public class ReservationPopupResponse {
+public class EarlyReservationPopupResponse {
     private ReservationShipDto ship;
     private ReservationUserDto user;
     private String schedulePublicId;
@@ -20,8 +23,8 @@ public class ReservationPopupResponse {
     private DayOfWeek dayOfWeek;
     private Integer tide;
 
-    public static ReservationPopupResponse from(Schedule schedule,Integer remainHeadCount, ReservationUserDto user, ReservationShipDto ship) {
-        return ReservationPopupResponse.builder()
+    public static EarlyReservationPopupResponse from(Schedule schedule, Integer remainHeadCount, ReservationUserDto user, ReservationShipDto ship) {
+        return EarlyReservationPopupResponse.builder()
                 .ship(ship)
                 .user(user)
                 .schedulePublicId(schedule.getPublicId())
