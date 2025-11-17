@@ -18,6 +18,7 @@ public class ScheduleMapper {
                 .departure(schedule.getDeparture())
                 .tide(schedule.getTide())
                 .remainCount(maxHeadCount-schedule.getCurrentHeadCount())
+                .type(schedule.getType())
                 .build();
     }
 

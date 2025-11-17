@@ -18,25 +18,24 @@ public class ReservationPopupController {
     /**
      * 선예약 팝업 조회
      */
-//    @GetMapping
-//    public ResponseEntity<ApiResponse<ReservationPopupResponse>> getReservationPopup(@RequestAttribute(name = "수정필요1") Long userId,
-//                                                                                    @RequestAttribute(name = "수정필요2") String grade,
-//                                                                                    @PathVariable("schedule_public_id") String publicId){
+//    @GetMapping("/early")
+//    public ResponseEntity<ApiResponse<EarlyReservationPopupResponse>> getReservationPopup(@RequestHeader Long userId,
+//                                                                                    @PathVariable("schedulePublicId") String publicId){
 //
-//        ReservationPopupResponse popupResponse = reservationPopupService.getReservationPopup(userId,grade,publicId);
+//        EarlyReservationPopupResponse response = reservationPopupService.getEarlyReservationPopup(userId,publicId);
 //
-//        return ResponseEntity.ok(ApiResponse.success("예약 팝업 조회에 성공하였습니다",popupResponse));
+//        return ResponseEntity.ok(ApiResponse.success("예약 팝업 조회에 성공하였습니다",response));
 //    }
 
-    //더미 컨트롤러
     @GetMapping("/early")
     public ResponseEntity<ApiResponse<EarlyReservationPopupResponse>> getReservationPopup(@PathVariable("schedulePublicId") String publicId){
 
-        Long userId = 1L;   //BASIC
-        EarlyReservationPopupResponse popupResponse = reservationPopupService.getReservationPopup(userId,publicId);
+        Long userId = 1L;
+        EarlyReservationPopupResponse response = reservationPopupService.getEarlyReservationPopup(userId,publicId);
 
-        return ResponseEntity.ok(ApiResponse.success("선예약 팝업 조회에 성공하였습니다",popupResponse));
+        return ResponseEntity.ok(ApiResponse.success("예약 팝업 조회에 성공하였습니다",response));
     }
+
 
     /**
      * 예약

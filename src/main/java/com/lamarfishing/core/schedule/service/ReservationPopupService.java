@@ -10,6 +10,7 @@ import com.lamarfishing.core.reservation.domain.Reservation;
 import com.lamarfishing.core.reservation.mapper.ReservationMapper;
 import com.lamarfishing.core.reservation.repository.ReservationRepository;
 import com.lamarfishing.core.schedule.domain.Schedule;
+import com.lamarfishing.core.schedule.domain.Type;
 import com.lamarfishing.core.schedule.dto.request.EarlyReservationPopupRequest;
 import com.lamarfishing.core.schedule.dto.response.EarlyReservationPopupResponse;
 import com.lamarfishing.core.schedule.dto.response.ReservationCreateResponse;
@@ -47,7 +48,7 @@ public class ReservationPopupService {
     /**
      * 선예약 팝업 조회
      */
-    public EarlyReservationPopupResponse getReservationPopup(Long userId, String publicId) {
+    public EarlyReservationPopupResponse getEarlyReservationPopup(Long userId, String publicId) {
         if (!publicId.startsWith("sch")) {
             throw new InvalidSchedulePublicId();
         }
@@ -57,6 +58,20 @@ public class ReservationPopupService {
             throw new UnauthorizedPopupAccess();
         }
 
+        Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
+        if (schedule.getType() != Type.EARLY){
+            throw new UnauthorizedPopupAccess();
+        }
+
+        ReservationShipDto reservationShipDto = ShipMapper.toReservationShipDto(schedule.getShip());
+        List<CouponCommonDto> coupons = couponRepository.findByUserAndStatus(user, Coupon.Status.AVAILABLE)
+                .stream()
+                .map(CouponMapper::toCouponCommonDto)
+                .toList();
+        ReservationUserDto reservationUserDto = UserMapper.toReservationUserDto(user,coupons);
+        Integer remainHeadCount = schedule.getShip().getMaxHeadCount() - schedule.getCurrentHeadCount();
+
+        return EarlyReservationPopupResponse.from(schedule,remainHeadCount,reservationUserDto,reservationShipDto);
     }
 
     @Transactional

@@ -1,5 +1,6 @@
 package com.lamarfishing.core.schedule.dto.command;
 
+import com.lamarfishing.core.schedule.domain.Type;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,5 +16,6 @@ public class ScheduleDetailDto {
     private LocalDateTime departure;
     private Integer tide;
     private Integer remainCount;
+    private Type type;
 
 }
