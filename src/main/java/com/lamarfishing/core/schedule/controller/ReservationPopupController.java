@@ -1,7 +1,7 @@
 package com.lamarfishing.core.schedule.controller;
 
 import com.lamarfishing.core.common.dto.response.ApiResponse;
-import com.lamarfishing.core.schedule.dto.request.EarlyReservationPopupRequest;
+import com.lamarfishing.core.schedule.dto.request.ReservationPopupRequest;
 import com.lamarfishing.core.schedule.dto.response.EarlyReservationPopupResponse;
 import com.lamarfishing.core.schedule.dto.response.NormalReservationPopupResponse;
 import com.lamarfishing.core.schedule.dto.response.ReservationCreateResponse;
@@ -72,7 +72,7 @@ public class ReservationPopupController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<ReservationCreateResponse>> createReservation(@PathVariable("schedulePublicId") String publicId,
-                                                                                    @RequestBody EarlyReservationPopupRequest reservationPopupRequest) {
+                                                                                    @RequestBody ReservationPopupRequest reservationPopupRequest) {
 
         Long userId = 1L; //BASIC
         ReservationCreateResponse reservationCreateResponse = reservationPopupService.createReservation(userId, publicId, reservationPopupRequest);

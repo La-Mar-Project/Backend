@@ -11,7 +11,7 @@ import com.lamarfishing.core.reservation.mapper.ReservationMapper;
 import com.lamarfishing.core.reservation.repository.ReservationRepository;
 import com.lamarfishing.core.schedule.domain.Schedule;
 import com.lamarfishing.core.schedule.domain.Type;
-import com.lamarfishing.core.schedule.dto.request.EarlyReservationPopupRequest;
+import com.lamarfishing.core.schedule.dto.request.ReservationPopupRequest;
 import com.lamarfishing.core.schedule.dto.response.EarlyReservationPopupResponse;
 import com.lamarfishing.core.schedule.dto.response.NormalReservationPopupResponse;
 import com.lamarfishing.core.schedule.dto.response.ReservationCreateResponse;
@@ -108,7 +108,7 @@ public class ReservationPopupService {
     }
 
     @Transactional
-    public ReservationCreateResponse createReservation(Long userId, String publicId, EarlyReservationPopupRequest earlyReservationPopupRequest) {
+    public ReservationCreateResponse createReservation(Long userId, String publicId, ReservationPopupRequest reservationPopupRequest) {
         if (!publicId.startsWith("sch")) {
             throw new InvalidSchedulePublicId();
         }
@@ -118,22 +118,22 @@ public class ReservationPopupService {
 
         Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
         Ship ship = schedule.getShip();
-        int headCount = earlyReservationPopupRequest.getHeadCount();
+        int headCount = reservationPopupRequest.getHeadCount();
         int totalPrice = ship.getPrice() * headCount;
-        String userRequest = earlyReservationPopupRequest.getRequest();
+        String userRequest = reservationPopupRequest.getRequest();
 
         //비회원이라면
         if (userGrade == User.Grade.GUEST) {
-            String username = earlyReservationPopupRequest.getUsername();
-            String nickname = earlyReservationPopupRequest.getNickname();
-            String phone = earlyReservationPopupRequest.getPhone();
+            String username = reservationPopupRequest.getUsername();
+            String nickname = reservationPopupRequest.getNickname();
+            String phone = reservationPopupRequest.getPhone();
             //게스트 업데이트
             user.updateGuestInfo(username, nickname, phone);
         }
 
         Coupon coupon = null;
-        if (earlyReservationPopupRequest.getCouponId() != null) {
-            coupon = couponRepository.findById(earlyReservationPopupRequest.getCouponId())
+        if (reservationPopupRequest.getCouponId() != null) {
+            coupon = couponRepository.findById(reservationPopupRequest.getCouponId())
                     .orElseThrow(CouponNotFound::new);
 
             if (!coupon.getUser().equals(user)) {
