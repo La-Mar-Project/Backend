@@ -30,6 +30,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -64,7 +66,7 @@ public class ReservationPopupService {
         }
 
         ReservationShipDto reservationShipDto = ShipMapper.toReservationShipDto(schedule.getShip());
-        List<CouponCommonDto> coupons = couponRepository.findByUserAndStatus(user, Coupon.Status.AVAILABLE)
+        List<CouponCommonDto> coupons = couponRepository.findByUserAndStatusAndType(user, Coupon.Status.AVAILABLE,getCouponTypeByDeparture(schedule.getDeparture()))
                 .stream()
                 .map(CouponMapper::toCouponCommonDto)
                 .toList();
@@ -116,5 +118,14 @@ public class ReservationPopupService {
         ReservationCreateResponse reservationCreateResponse = ReservationMapper.toReservationCreateResponse(reservation);
 
         return reservationCreateResponse;
+    }
+
+    private Coupon.Type getCouponTypeByDeparture(LocalDateTime departure) {
+        DayOfWeek day = departure.getDayOfWeek();
+
+        if (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) {
+            return Coupon.Type.WEEKEND;
+        }
+        return Coupon.Type.WEEKDAY;
     }
 }
