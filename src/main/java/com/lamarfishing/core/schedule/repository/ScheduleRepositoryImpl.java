@@ -19,6 +19,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
+    @Override
     public Page<ScheduleMainDto> getSchedules(LocalDateTime from, LocalDateTime to, Pageable pageable) {
 
         List<ScheduleMainDto> mainQuery = queryFactory

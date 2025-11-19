@@ -1,15 +1,17 @@
 package com.lamarfishing.core.log.message.aop;
 
-import com.lamarfishing.core.message.domain.MessageLog;
-import com.lamarfishing.core.message.dto.command.MessageCommonDto;
+import com.lamarfishing.core.log.message.domain.MessageLog;
+import com.lamarfishing.core.log.message.domain.Result;
 import com.lamarfishing.core.log.message.repository.MessageLogRepository;
+import com.lamarfishing.core.message.dto.exception.MessageSendFailedException;
+import com.lamarfishing.core.schedule.domain.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Slf4j
 @Aspect
@@ -20,28 +22,26 @@ public class MessageLogAspect {
     private final MessageLogRepository messageLogRepository;
 
     @AfterReturning(
-            pointcut =
-                    "execution(java.util.List<com.lamarfishing.core.message.dto.command.MessageCommonDto> " +
-                    "com.lamarfishing.core.message.service.MessageService.send*(..))",
-            returning = "result"
+            pointcut = "execution(* com.lamarfishing.core.message.service.MessageService.*(..)) && args(phones, status)"
     )
-    public void successLog(List<MessageCommonDto> result) {
+    public void successLog(List<String> phones, Status status) {
 
-        List<MessageLog> logs = result.stream().map(
-                message -> MessageLog.create(message.getRecipientPhone(), message.getContent())
-        ).toList();
+        List<MessageLog> logs = phones.stream().map(phone ->
+                MessageLog.create(phone, status.message(), Result.SUCCESS)).toList();
 
         messageLogRepository.saveAll(logs);
     }
 
-
-    // 실패 이력을 재활용할 일 X
     @AfterThrowing(
-            pointcut = "execution(* com.lamarfishing.core.message.service.MessageService.*(..))",
+            pointcut = "execution(* com.lamarfishing.core.message.service.MessageService.*(..)) && args(phones, status)",
             throwing = "ex"
     )
-    public void failureLog(JoinPoint joinPoint, Throwable ex) {
-        return;
+    public void failureLog(List<String> phones, Status status, MessageSendFailedException ex) {
+
+        List<MessageLog> logs = ex.getFailedPhones().stream().map(phone ->
+                MessageLog.create(phone, status.message(), Result.SUCCESS)).toList();
+
+        messageLogRepository.saveAll(logs);
     }
 
 }

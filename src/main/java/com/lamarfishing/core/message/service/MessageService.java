@@ -37,6 +37,7 @@ public class MessageService {
 
     public List<MessageCommonDto> sendMessage(List<String> phones, Status status) {
 
+        List<String> failedPhones = new ArrayList<>();
         List<MessageCommonDto> results = new ArrayList<>();
         String content = status.message();
 
@@ -49,11 +50,13 @@ public class MessageService {
 
             try {
                 messageService.send(msg);
-            } catch (SolapiMessageNotReceivedException e) {
-                throw new MessageSendFailedException("문자 API 실패: " + e.getFailedMessageList());
             } catch (Exception e) {
-                throw new MessageSendFailedException("오류: " + e.getMessage());
+                failedPhones.add(to);
             }
+        }
+
+        if (!failedPhones.isEmpty()) {
+            throw new MessageSendFailedException("전송 실패: " + failedPhones, failedPhones);
         }
         return results;
     }
