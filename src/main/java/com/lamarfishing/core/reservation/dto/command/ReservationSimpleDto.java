@@ -1,10 +1,12 @@
 package com.lamarfishing.core.reservation.dto.command;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 public class ReservationSimpleDto {
 
     private Long reservationId;

@@ -86,6 +86,9 @@ public class ReservationController {
         return ResponseEntity.ok(ApiResponse.success("예약 상태 변경에 성공하였습니다."));
     }
 
+    /**
+     * 예약 목록 조회
+     */
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<ReservationSimpleDto>>> getReservations(Process process, Pageable pageable) {
 

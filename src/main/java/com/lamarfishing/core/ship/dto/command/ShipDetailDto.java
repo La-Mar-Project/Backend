@@ -13,6 +13,7 @@ public class ShipDetailDto {
     private Long shipId;
     private String fishType;
     private Integer price;
+    private Integer maxHeadCount;
     private String notification;
 
 }
