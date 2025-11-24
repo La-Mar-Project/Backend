@@ -56,4 +56,15 @@ public class CouponService {
         Coupon coupon = Coupon.create(Coupon.Type.WEEKDAY, receiver);
         couponRepository.save(coupon);
     }
+
+    private User findUser(Long userId){
+        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+        return user;
+    }
+
+    private Reservation findReservation(String publicId) {
+        Reservation reservation = reservationRepository.findByPublicId(publicId).orElseThrow(ReservationNotFound::new);
+        return reservation;
+    }
+
 }
