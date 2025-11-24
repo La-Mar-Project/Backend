@@ -40,6 +40,7 @@ public class CouponService {
         }
 
         Reservation reservation = reservationRepository.findByPublicId(publicId).orElseThrow(ReservationNotFound::new);
+
         User receiver = reservation.getUser();
         LocalDateTime departure = reservation.getSchedule().getDeparture();
         //주말인지 아닌지
