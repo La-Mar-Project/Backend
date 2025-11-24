@@ -24,12 +24,15 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
     /**
      * 종윤이 코드
      */
+    // 예약자 이름, 인원, 메모,
     @Override
     public Page<ReservationSimpleDto> getReservations(Long userId, Process process, Pageable pageable) {
         List<ReservationSimpleDto> mainQuery = queryFactory
                 .select(Projections.constructor(ReservationSimpleDto.class,
                         QReservation.reservation.id, QReservation.reservation.totalPrice,
-                        QReservation.reservation.process, QReservation.reservation.schedule.ship.fishType,
+                        QReservation.reservation.process, QReservation.reservation.headCount, QReservation.reservation.request,
+                        QReservation.reservation.user.username,
+                        QReservation.reservation.schedule.ship.fishType,
                         QReservation.reservation.schedule.departure))
                 .from(QReservation.reservation)
                 .leftJoin(QSchedule.schedule).on(QSchedule.schedule.id.eq(QReservation.reservation.schedule.id))
