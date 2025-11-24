@@ -7,19 +7,16 @@ spring:
     hikari:
       initialization-fail-timeout: 0
 
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
   security:
     oauth2:
       resourceserver:
         jwt:
           jwk-set-uri: https://jjubul-auth.duckdns.org/oauth2/jwks
-
-  jpa:
-    database-platform: org.hibernate.dialect.MySQL8Dialect
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        format_sql: true
 
 logging:
   level:
