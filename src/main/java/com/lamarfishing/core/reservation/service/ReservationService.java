@@ -116,8 +116,15 @@ public class ReservationService {
             return;
         }
 
-        // 예약 완료, 입금 완료
+        // 예약 완료
+        if(requestProcess == Process.RESERVE_COMPLETED) {
+            reservation.changeProcess(requestProcess);
+            return;
+        }
+        // 입금 완료
         reservation.changeProcess(requestProcess);
+        Statistic statistic = statisticRepository.findByDate(LocalDate.now());
+        statistic.addDeposited();
     }
     /**
      * private Method
