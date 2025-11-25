@@ -148,7 +148,7 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void UpdateDepartureTime(Long userId, String publicId, LocalTime updateTime) {
+    public void updateDepartureTime(Long userId, String publicId, LocalTime updateTime) {
 
         ValidatePublicId.validateSchedulePublicId(publicId);
 

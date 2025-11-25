@@ -72,12 +72,12 @@ public class ScheduleController {
 //
 //        return ResponseEntity.ok(ApiResponse.success("출항 일정 삭제에 성공하였습니다."));
 //    }
-    @DeleteExchange("/{schedulePublicId}")
+    @DeleteMapping("/{schedulePublicId}")
     public ResponseEntity<ApiResponse<Void>> deleteSchedule(@PathVariable("schedulePublicId") String publicId) {
         Long userId = 2L;
         scheduleService.deleteSchedule(userId, publicId);
 
-        return ResponseEntity.ok(ApiResponse.success("출항 일정 삭제에 성공하였습니다."));
+        return ResponseEntity.ok(ApiResponse.success("출항 일정 삭제에 성공하였습니다.",null));
     }
 
     /**
@@ -109,10 +109,10 @@ public class ScheduleController {
 //        return ResponseEntity.ok(ApiResponse.success("출항 시간 수정에 성공하였습니다."));
 //    }
     @PatchMapping("/{schedulePublicId}/departure")
-    public ResponseEntity<ApiResponse<Void>> UpdateDepartureTime(@PathVariable String schedulePublicId,
+    public ResponseEntity<ApiResponse<Void>> updateDepartureTime(@PathVariable String schedulePublicId,
                                                                  @RequestBody UpdateDepartureTimeRequest req){
         Long userId = 2L;
-        scheduleService.UpdateDepartureTime(userId,schedulePublicId, req.getDepartureTime());
+        scheduleService.updateDepartureTime(userId,schedulePublicId, req.getDepartureTime());
 
         return ResponseEntity.ok(ApiResponse.success("출항 시간 수정에 성공하였습니다."));
     }

@@ -75,11 +75,11 @@ public class ReservationController {
 //        return ResponseEntity.ok(ApiResponse.success("예약 상태 변경에 성공하였습니다."));
 //    }
     @PatchMapping("/{reservationPublicId}/cancel-request")
-    public ResponseEntity<ApiResponse<Void>> ReservationCancelRequest(@PathVariable("reservationPublicId") String publicId,
+    public ResponseEntity<ApiResponse<Void>> reservationCancelRequest(@PathVariable("reservationPublicId") String publicId,
                                                                       @RequestBody ReservationProcessUpdateRequest request) {
         Long userId = 1L;
         Process process = request.getProcess();
-        reservationService.ReservationCancelRequest(userId, publicId, process);
+        reservationService.reservationCancelRequest(userId, publicId, process);
 
         return ResponseEntity.ok(ApiResponse.success("예약 취소에 성공하였습니다."));
     }
@@ -88,11 +88,11 @@ public class ReservationController {
      * 관리자 예약 상태 변경
      */
     @PatchMapping("/{reservationPublicId}/process")
-    public ResponseEntity<ApiResponse<Void>> ChangeReservationProcess(@PathVariable("reservationPublicId") String publicId,
+    public ResponseEntity<ApiResponse<Void>> changeReservationProcess(@PathVariable("reservationPublicId") String publicId,
                                                                       @RequestBody ReservationProcessUpdateRequest request) {
         Long userId = 2L;
         Reservation.Process process = request.getProcess();
-        reservationService.ChangeReservationProcess(userId, publicId, process);
+        reservationService.changeReservationProcess(userId, publicId, process);
 
         return ResponseEntity.ok(ApiResponse.success("예약 취소에 성공하였습니다."));
     }

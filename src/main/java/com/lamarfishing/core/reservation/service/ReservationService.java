@@ -75,7 +75,7 @@ public class ReservationService {
      * 일반 유저가 예약
      */
     @Transactional
-    public void ReservationCancelRequest(Long userId, String publicId, Process requestProcess) {
+    public void reservationCancelRequest(Long userId, String publicId, Process requestProcess) {
 
         ValidatePublicId.validateReservationPublicId(publicId);
 
@@ -93,7 +93,7 @@ public class ReservationService {
      * Admin이 예약 상태 변경
      */
     @Transactional
-    public void ChangeReservationProcess(Long userId, String publicId, Process requestProcess) {
+    public void changeReservationProcess(Long userId, String publicId, Process requestProcess) {
 
         ValidatePublicId.validateReservationPublicId(publicId);
 
