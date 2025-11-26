@@ -6,8 +6,12 @@ import com.lamarfishing.core.schedule.dto.response.EarlyReservationPopupResponse
 import com.lamarfishing.core.schedule.dto.response.NormalReservationPopupResponse;
 import com.lamarfishing.core.schedule.dto.response.ReservationCreateResponse;
 import com.lamarfishing.core.schedule.service.ReservationPopupService;
+import com.lamarfishing.core.user.dto.command.AuthenticatedUser;
+import com.lamarfishing.core.user.dto.command.NormalReservationUserDto;
+import com.lamarfishing.core.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class ReservationPopupController {
 
     private final ReservationPopupService reservationPopupService;
+    private final UserService userService;
     /**
      * 선예약 팝업 조회
      */
@@ -49,11 +54,15 @@ public class ReservationPopupController {
 //    }
 
     @GetMapping("/normal")
-    public ResponseEntity<ApiResponse<NormalReservationPopupResponse>> getNormalReservationPopup(@PathVariable("schedulePublicId") String publicId){
+    public ResponseEntity<ApiResponse<NormalReservationPopupResponse>> getNormalReservationPopup(@AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+                                                                                                 @PathVariable("schedulePublicId") String publicId){
 
-        Long userId = 1L;
-        NormalReservationPopupResponse response = reservationPopupService.getNormalReservationPopup(userId,publicId);
-
+        if(authenticatedUser==null){
+            NormalReservationPopupResponse response = reservationPopupService.getNormalReservationPopupGuest(publicId);
+            return ResponseEntity.ok(ApiResponse.success("일반예약 팝업 조회에 성공하였습니다",response));
+        }
+        Long userId = userService.findUserId(authenticatedUser);
+        NormalReservationPopupResponse response = reservationPopupService.getNormalReservationPopupUser(userId,publicId);
         return ResponseEntity.ok(ApiResponse.success("일반예약 팝업 조회에 성공하였습니다",response));
     }
 

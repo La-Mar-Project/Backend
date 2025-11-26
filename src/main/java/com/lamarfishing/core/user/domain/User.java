@@ -23,6 +23,7 @@ public class User {
     @Column(name = "user_sub")
     private String sub;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "user_provider")
     private Provider provider;
 

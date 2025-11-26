@@ -84,12 +84,11 @@ public class ReservationPopupService {
     }
 
     /**
-     * 일반예약 팝업 조회
+     * 일반예약 팝업 조회 (회원, 관리자)
      */
-    public NormalReservationPopupResponse getNormalReservationPopup(Long userId, String publicId) {
-        if (!publicId.startsWith("sch")) {
-            throw new InvalidSchedulePublicId();
-        }
+    public NormalReservationPopupResponse getNormalReservationPopupUser(Long userId, String publicId) {
+
+        ValidatePublicId.validateSchedulePublicId(publicId);
 
         User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
 
@@ -101,14 +100,29 @@ public class ReservationPopupService {
         ReservationShipDto reservationShipDto = ShipMapper.toReservationShipDto(schedule.getShip());
         Integer remainHeadCount = schedule.getShip().getMaxHeadCount() - schedule.getCurrentHeadCount();
 
-        if (user.getGrade() == Grade.GUEST){
-            NormalReservationUserDto normalReservationUserDto = UserMapper.toNormalReservationUserDto();
-            return NormalReservationPopupResponse.from(schedule,remainHeadCount, normalReservationUserDto,reservationShipDto);
-        }
-
         NormalReservationUserDto normalReservationUserDto = UserMapper.toNormalReservationUserDto(user);
         return NormalReservationPopupResponse.from(schedule,remainHeadCount, normalReservationUserDto,reservationShipDto);
 
+    }
+
+    /**
+     * 비회원 예약 팝업 조회
+     */
+    public NormalReservationPopupResponse getNormalReservationPopupGuest(String publicId) {
+
+        ValidatePublicId.validateSchedulePublicId(publicId);
+
+        Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
+        if (schedule.getType() != Type.NORMAL){
+            throw new UnauthorizedPopupAccess();
+        }
+
+        ReservationShipDto reservationShipDto = ShipMapper.toReservationShipDto(schedule.getShip());
+        Integer remainHeadCount = schedule.getShip().getMaxHeadCount() - schedule.getCurrentHeadCount();
+
+        NormalReservationUserDto normalReservationUserDto = UserMapper.toNormalReservationUserDto();
+
+        return NormalReservationPopupResponse.from(schedule,remainHeadCount, normalReservationUserDto,reservationShipDto);
 
     }
 
