@@ -34,9 +34,10 @@ public class ReservationPopupController {
 //    }
 
     @GetMapping("/early")
-    public ResponseEntity<ApiResponse<EarlyReservationPopupResponse>> getEarlyReservationPopup(@PathVariable("schedulePublicId") String publicId){
+    public ResponseEntity<ApiResponse<EarlyReservationPopupResponse>> getEarlyReservationPopup(@AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+                                                                                               @PathVariable("schedulePublicId") String publicId){
 
-        Long userId = 1L;
+        Long userId = userService.findUserId(authenticatedUser);
         EarlyReservationPopupResponse response = reservationPopupService.getEarlyReservationPopup(userId,publicId);
 
         return ResponseEntity.ok(ApiResponse.success("선예약 팝업 조회에 성공하였습니다",response));
