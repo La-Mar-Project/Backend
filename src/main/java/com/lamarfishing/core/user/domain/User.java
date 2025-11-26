@@ -61,6 +61,15 @@ public class User {
                 .build();
     }
 
+    public static User createAnonymous(String username, String nickname, String phone) {
+        return User.builder()
+                .username(username)
+                .nickname(nickname)
+                .grade(Grade.GUEST)
+                .phone(phone)
+                .build();
+    }
+
     public void updateGuestInfo(String username, String nickname, String phone){
         if (this.grade != Grade.GUEST) {
             throw new InvalidUserGrade();
