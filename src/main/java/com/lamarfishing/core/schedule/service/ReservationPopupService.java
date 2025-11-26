@@ -126,15 +126,17 @@ public class ReservationPopupService {
 
     }
 
+    /**
+     * 회원 예약
+     */
     @Transactional
-    public ReservationCreateResponse createReservation(
+    public ReservationCreateResponse createReservationUser(
             Long userId, String publicId,
             String username, String nickname, String phone, int headCount, String userRequest, Long couponId) {
 
         ValidatePublicId.validateSchedulePublicId(publicId);
 
         User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
-        Grade userGrade = user.getGrade();
 
         Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
         Ship ship = schedule.getShip();
@@ -143,12 +145,6 @@ public class ReservationPopupService {
             throw new InvalidHeadCount();
         }
         int totalPrice = ship.getPrice() * headCount;
-
-        //비회원이라면
-        if (userGrade == Grade.GUEST) {
-            //게스트 업데이트
-            user.updateGuestInfo(username, nickname, phone);
-        }
 
         Coupon coupon = null;
         if (couponId != null) {
@@ -160,6 +156,40 @@ public class ReservationPopupService {
             }
             coupon.use();
         }
+
+        schedule.increaseCurrentHeadCount(headCount);
+        Reservation reservation = Reservation.create(headCount,userRequest,totalPrice, Reservation.Process.RESERVE_COMPLETED,user,schedule,coupon);
+        reservationRepository.save(reservation);
+
+        reservationService.sendReservationReceiptNotification(user, schedule, ship, totalPrice, headCount);
+
+        ReservationCreateResponse reservationCreateResponse = ReservationMapper.toReservationCreateResponse(reservation);
+
+        return reservationCreateResponse;
+    }
+
+    /**
+     * 비회원 예약
+     */
+    @Transactional
+    public ReservationCreateResponse createReservationGuest(String publicId, String username, String nickname,
+                                                            String phone, int headCount, String userRequest, Long couponId) {
+
+        ValidatePublicId.validateSchedulePublicId(publicId);
+
+        User user = User.createAnonymous(username, nickname, phone);
+        userRepository.save(user);
+
+        Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
+        Ship ship = schedule.getShip();
+
+        if(headCount + schedule.getCurrentHeadCount() > schedule.getShip().getMaxHeadCount()){
+            throw new InvalidHeadCount();
+        }
+        int totalPrice = ship.getPrice() * headCount;
+
+
+        Coupon coupon = null;
 
         schedule.increaseCurrentHeadCount(headCount);
         Reservation reservation = Reservation.create(headCount,userRequest,totalPrice, Reservation.Process.RESERVE_COMPLETED,user,schedule,coupon);

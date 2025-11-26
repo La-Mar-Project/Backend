@@ -67,27 +67,22 @@ public class ReservationPopupController {
     }
 
     /**
-     * 예약
+     * 예약 생성하기
      */
-//    @PostMapping
-//    public ResponseEntity<ApiResponse<ReservationCreateResponse>> createReservation(@RequestAttribute(name = "수정필요1") Long userId,
-//                                                                                    @PathVariable("schedule_public_id") String publicId,
-//                                                                                    @RequestBody ReservationPopupRequest reservationPopupRequest) {
-//
-//        ReservationCreateResponse reservationCreateResponse = reservationPopupService.createReservation(userId, publicId, reservationPopupRequest);
-//
-//        return ResponseEntity.ok(ApiResponse.success("예약을 성공하였습니다.",reservationCreateResponse));
-//    }
-
     @PostMapping
-    public ResponseEntity<ApiResponse<ReservationCreateResponse>> createReservation(@PathVariable("schedulePublicId") String publicId,
+    public ResponseEntity<ApiResponse<ReservationCreateResponse>> createReservation(@AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+                                                                                    @PathVariable("schedulePublicId") String publicId,
                                                                                     @RequestBody ReservationPopupRequest req) {
-        Long userId = 3L; //VIP
+        if(authenticatedUser == null){
+            ReservationCreateResponse reservationCreateResponse = reservationPopupService.createReservationGuest(publicId,
+                    req.getUsername(), req.getNickname(), req.getPhone(), req.getHeadCount(), req.getRequest(), req.getCouponId());
 
-        ReservationCreateResponse reservationCreateResponse = reservationPopupService.createReservation(
-                userId, publicId,
+            return ResponseEntity.ok(ApiResponse.success("예약을 성공하였습니다.",reservationCreateResponse));
+        }
+
+        Long userId = userService.findUserId(authenticatedUser);
+        ReservationCreateResponse reservationCreateResponse = reservationPopupService.createReservationUser(userId, publicId,
                 req.getUsername(), req.getNickname(), req.getPhone(), req.getHeadCount(), req.getRequest(), req.getCouponId());
-
         return ResponseEntity.ok(ApiResponse.success("예약을 성공하였습니다.",reservationCreateResponse));
     }
 }
