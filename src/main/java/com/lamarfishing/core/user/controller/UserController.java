@@ -7,6 +7,7 @@ import com.lamarfishing.core.reservation.dto.command.ReservationSimpleDto;
 import com.lamarfishing.core.user.dto.command.AuthenticatedUser;
 import com.lamarfishing.core.user.dto.response.MyProfileResponse;
 import com.lamarfishing.core.user.service.UserQueryService;
+import com.lamarfishing.core.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,20 +27,24 @@ public class UserController {
 
     private final UserQueryService userQueryService;
     private final ReservationQueryService reservationQueryService;
+    private final UserService userService;
 
     @GetMapping("/me/profile")
-    public ResponseEntity<ApiResponse<MyProfileResponse>> getMyProfile() {
+    public ResponseEntity<ApiResponse<MyProfileResponse>> getMyProfile(@AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
 
-        MyProfileResponse response = MyProfileResponse.from(userQueryService.getMyProfile());
+        Long userId = userService.findUserId(authenticatedUser);
+        MyProfileResponse response = MyProfileResponse.from(userQueryService.getMyProfile(userId));
 
         return ResponseEntity.ok(ApiResponse.success("프로필 조회에 성공하였습니다.", response));
     }
 
     //내 예약 검색하기
     @GetMapping("/me/reservations")
-    public ResponseEntity<ApiResponse<PageResponse<ReservationSimpleDto>>> getMyReservations(Process process, Pageable pageable) {
+    public ResponseEntity<ApiResponse<PageResponse<ReservationSimpleDto>>> getMyReservations(@AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+                                                                                             Process process, Pageable pageable) {
 
-        Page<ReservationSimpleDto> pageResult = reservationQueryService.getMyReservations(1L, process, pageable);
+        Long userId = userService.findUserId(authenticatedUser);
+        Page<ReservationSimpleDto> pageResult = reservationQueryService.getMyReservations(userId, process, pageable);
 
         return ResponseEntity.ok(ApiResponse.success("나의 예약 목록 조회를 성공하였습니다.", PageResponse.from(pageResult)));
     }

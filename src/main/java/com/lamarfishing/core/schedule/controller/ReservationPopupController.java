@@ -6,8 +6,12 @@ import com.lamarfishing.core.schedule.dto.response.EarlyReservationPopupResponse
 import com.lamarfishing.core.schedule.dto.response.NormalReservationPopupResponse;
 import com.lamarfishing.core.schedule.dto.response.ReservationCreateResponse;
 import com.lamarfishing.core.schedule.service.ReservationPopupService;
+import com.lamarfishing.core.user.dto.command.AuthenticatedUser;
+import com.lamarfishing.core.user.dto.command.NormalReservationUserDto;
+import com.lamarfishing.core.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class ReservationPopupController {
 
     private final ReservationPopupService reservationPopupService;
+    private final UserService userService;
     /**
      * 선예약 팝업 조회
      */
@@ -29,9 +34,10 @@ public class ReservationPopupController {
 //    }
 
     @GetMapping("/early")
-    public ResponseEntity<ApiResponse<EarlyReservationPopupResponse>> getEarlyReservationPopup(@PathVariable("schedulePublicId") String publicId){
+    public ResponseEntity<ApiResponse<EarlyReservationPopupResponse>> getEarlyReservationPopup(@AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+                                                                                               @PathVariable("schedulePublicId") String publicId){
 
-        Long userId = 1L;
+        Long userId = userService.findUserId(authenticatedUser);
         EarlyReservationPopupResponse response = reservationPopupService.getEarlyReservationPopup(userId,publicId);
 
         return ResponseEntity.ok(ApiResponse.success("선예약 팝업 조회에 성공하였습니다",response));
@@ -49,36 +55,35 @@ public class ReservationPopupController {
 //    }
 
     @GetMapping("/normal")
-    public ResponseEntity<ApiResponse<NormalReservationPopupResponse>> getNormalReservationPopup(@PathVariable("schedulePublicId") String publicId){
+    public ResponseEntity<ApiResponse<NormalReservationPopupResponse>> getNormalReservationPopup(@AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+                                                                                                 @PathVariable("schedulePublicId") String publicId){
 
-        Long userId = 1L;
-        NormalReservationPopupResponse response = reservationPopupService.getNormalReservationPopup(userId,publicId);
-
+        if(authenticatedUser==null){
+            NormalReservationPopupResponse response = reservationPopupService.getNormalReservationPopupGuest(publicId);
+            return ResponseEntity.ok(ApiResponse.success("일반예약 팝업 조회에 성공하였습니다",response));
+        }
+        Long userId = userService.findUserId(authenticatedUser);
+        NormalReservationPopupResponse response = reservationPopupService.getNormalReservationPopupUser(userId,publicId);
         return ResponseEntity.ok(ApiResponse.success("일반예약 팝업 조회에 성공하였습니다",response));
     }
 
     /**
-     * 예약
+     * 예약 생성하기
      */
-//    @PostMapping
-//    public ResponseEntity<ApiResponse<ReservationCreateResponse>> createReservation(@RequestAttribute(name = "수정필요1") Long userId,
-//                                                                                    @PathVariable("schedule_public_id") String publicId,
-//                                                                                    @RequestBody ReservationPopupRequest reservationPopupRequest) {
-//
-//        ReservationCreateResponse reservationCreateResponse = reservationPopupService.createReservation(userId, publicId, reservationPopupRequest);
-//
-//        return ResponseEntity.ok(ApiResponse.success("예약을 성공하였습니다.",reservationCreateResponse));
-//    }
-
     @PostMapping
-    public ResponseEntity<ApiResponse<ReservationCreateResponse>> createReservation(@PathVariable("schedulePublicId") String publicId,
+    public ResponseEntity<ApiResponse<ReservationCreateResponse>> createReservation(@AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+                                                                                    @PathVariable("schedulePublicId") String publicId,
                                                                                     @RequestBody ReservationPopupRequest req) {
-        Long userId = 3L; //VIP
+        if(authenticatedUser == null){
+            ReservationCreateResponse reservationCreateResponse = reservationPopupService.createReservationGuest(publicId,
+                    req.getUsername(), req.getNickname(), req.getPhone(), req.getHeadCount(), req.getRequest(), req.getCouponId());
 
-        ReservationCreateResponse reservationCreateResponse = reservationPopupService.createReservation(
-                userId, publicId,
+            return ResponseEntity.ok(ApiResponse.success("예약을 성공하였습니다.",reservationCreateResponse));
+        }
+
+        Long userId = userService.findUserId(authenticatedUser);
+        ReservationCreateResponse reservationCreateResponse = reservationPopupService.createReservationUser(userId, publicId,
                 req.getUsername(), req.getNickname(), req.getPhone(), req.getHeadCount(), req.getRequest(), req.getCouponId());
-
         return ResponseEntity.ok(ApiResponse.success("예약을 성공하였습니다.",reservationCreateResponse));
     }
 }
