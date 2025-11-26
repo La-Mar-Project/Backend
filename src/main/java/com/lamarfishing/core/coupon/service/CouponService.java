@@ -12,6 +12,7 @@ import com.lamarfishing.core.user.domain.User;
 import com.lamarfishing.core.user.exception.InvalidUserGrade;
 import com.lamarfishing.core.user.exception.UserNotFound;
 import com.lamarfishing.core.user.repository.UserRepository;
+import com.lamarfishing.core.validate.ValidatePublicId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,9 +31,8 @@ public class CouponService {
 
     @Transactional
     public void issueCoupon(Long userId, String publicId) {
-        if (!publicId.startsWith("res")) {
-            throw new InvalidReservationPublicId();
-        }
+
+        ValidatePublicId.validateReservationPublicId(publicId);
 
         User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
         if (user.getGrade() != Grade.ADMIN) {
