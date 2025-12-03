@@ -3,15 +3,9 @@ package com.lamarfishing.core.coupon.service;
 import com.lamarfishing.core.coupon.domain.Coupon;
 import com.lamarfishing.core.coupon.repository.CouponRepository;
 import com.lamarfishing.core.reservation.domain.Reservation;
-import com.lamarfishing.core.reservation.exception.InvalidReservationPublicId;
 import com.lamarfishing.core.reservation.exception.ReservationNotFound;
 import com.lamarfishing.core.reservation.repository.ReservationRepository;
-import com.lamarfishing.core.schedule.domain.Schedule;
-import com.lamarfishing.core.user.domain.Grade;
 import com.lamarfishing.core.user.domain.User;
-import com.lamarfishing.core.user.exception.InvalidUserGrade;
-import com.lamarfishing.core.user.exception.UserNotFound;
-import com.lamarfishing.core.user.repository.UserRepository;
 import com.lamarfishing.core.validate.ValidatePublicId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,14 +17,12 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
-public class CouponService {
+@Transactional
+public class CouponCommandService {
 
-    private final UserRepository userRepository;
     private final ReservationRepository reservationRepository;
     private final CouponRepository couponRepository;
 
-    @Transactional
     @PreAuthorize("hasAuthority('GRADE_ADMIN')")
     public void issueCoupon(String publicId) {
 
@@ -58,5 +50,4 @@ public class CouponService {
         DayOfWeek day = time.getDayOfWeek();
         return day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY;
     }
-
 }
