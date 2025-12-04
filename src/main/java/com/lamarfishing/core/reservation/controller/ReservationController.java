@@ -2,7 +2,7 @@ package com.lamarfishing.core.reservation.controller;
 
 import com.lamarfishing.core.common.dto.response.ApiResponse;
 import com.lamarfishing.core.common.dto.response.PageResponse;
-import com.lamarfishing.core.coupon.service.CouponService;
+import com.lamarfishing.core.coupon.service.CouponCommandService;
 import com.lamarfishing.core.reservation.domain.Reservation;
 import com.lamarfishing.core.reservation.dto.command.ReservationSimpleDto;
 import com.lamarfishing.core.reservation.dto.request.ReservationProcessUpdateRequest;
@@ -29,7 +29,7 @@ public class ReservationController {
 
     private final ReservationQueryService reservationQueryService;
     private final ReservationService reservationService;
-    private final CouponService couponService;
+    private final CouponCommandService couponCommandService;
     private final UserService userService;
 
     /**
@@ -52,7 +52,7 @@ public class ReservationController {
     public ResponseEntity<ApiResponse<Void>> issueCoupon(@AuthenticationPrincipal AuthenticatedUser authenticatedUser,
                                                          @PathVariable("reservationPublicId") String publicId) {
 
-        couponService.issueCoupon(publicId);
+        couponCommandService.issueCoupon(publicId);
 
         return ResponseEntity.ok(ApiResponse.success("쿠폰을 발급하였습니다.",null));
     }
