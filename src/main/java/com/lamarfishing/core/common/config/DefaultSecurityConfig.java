@@ -65,36 +65,31 @@ public class DefaultSecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/", "/error").permitAll()
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .anyRequest().authenticated())
-                .oauth2ResourceServer(resource -> resource.jwt(
-                        jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())
-                ))
+                        .anyRequest().permitAll()  // ← 이것!
+                )
                 .logout(AbstractHttpConfigurer::disable);
-
-
-
 
         return http.build();
     }
 
 
-    @Bean
-    public Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter() {
-
-        return new Converter<Jwt, AbstractAuthenticationToken>() {
-
-            @Override
-            public AbstractAuthenticationToken convert(Jwt jwt) {
-
-                ArrayList<GrantedAuthority> authorities = new ArrayList<>();
-                authorities.add(new SimpleGrantedAuthority("GRADE_" + jwt.getClaim("grade").toString()));
-
-                AuthenticatedUser authenticatedUser = AuthenticatedUser.from(jwt);
-
-                return new CustomJwtAuthenticationToken(jwt, authorities, authenticatedUser);
-            }
-        };
-    }
+//    @Bean
+//    public Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter() {
+//
+//        return new Converter<Jwt, AbstractAuthenticationToken>() {
+//
+//            @Override
+//            public AbstractAuthenticationToken convert(Jwt jwt) {
+//
+//                ArrayList<GrantedAuthority> authorities = new ArrayList<>();
+//                authorities.add(new SimpleGrantedAuthority("GRADE_" + jwt.getClaim("grade").toString()));
+//
+//                AuthenticatedUser authenticatedUser = AuthenticatedUser.from(jwt);
+//
+//                return new CustomJwtAuthenticationToken(jwt, authorities, authenticatedUser);
+//            }
+//        };
+//    }
 
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder encoder) {
