@@ -2,25 +2,19 @@ package com.lamarfishing.core.schedule.service;
 
 import com.lamarfishing.core.message.dto.command.MessageCommonDto;
 import com.lamarfishing.core.schedule.domain.Status;
+import com.lamarfishing.core.schedule.dto.command.DepartureCommand;
+import com.lamarfishing.core.schedule.dto.result.DepartureResult;
 import com.lamarfishing.core.schedule.exception.InvalidDepartureRequest;
-import com.lamarfishing.core.schedule.dto.request.DepartureRequest;
-import com.lamarfishing.core.schedule.dto.response.DepartureResponse;
 import com.lamarfishing.core.message.service.MessageService;
 import com.lamarfishing.core.reservation.domain.Reservation;
 import com.lamarfishing.core.reservation.repository.ReservationRepository;
 import com.lamarfishing.core.schedule.domain.Schedule;
-import com.lamarfishing.core.schedule.exception.InvalidSchedulePublicId;
 import com.lamarfishing.core.schedule.exception.ScheduleNotFound;
 import com.lamarfishing.core.schedule.repository.ScheduleRepository;
-import com.lamarfishing.core.user.domain.Grade;
-import com.lamarfishing.core.user.domain.User;
-import com.lamarfishing.core.user.exception.InvalidUserGrade;
-import com.lamarfishing.core.user.exception.UserNotFound;
 import com.lamarfishing.core.user.repository.UserRepository;
 import com.lamarfishing.core.validate.ValidatePublicId;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,29 +23,28 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class DepartureService {
+public class DepartureCommandService {
     private final ScheduleRepository scheduleRepository;
     private final ReservationRepository reservationRepository;
-    private final UserRepository userRepository;
     private final MessageService messageService;
 
     //출항 확정
-    @PreAuthorize("hasAuthority('GRADE_ADMIN')")
-    public DepartureResponse confirmation(String publicId, Status scheduleStatus) {
-        return processDeparture(publicId, scheduleStatus, Status.CONFIRMED);
+    // @PreAuthorize("hasAuthority('GRADE_ADMIN')")
+    public DepartureResult confirmation(String publicId, DepartureCommand command) {
+        return processDeparture(publicId,command.getScheduleStatus() , Status.CONFIRMED);
     }
 
-    @PreAuthorize("hasAuthority('GRADE_ADMIN')")
-    public DepartureResponse cancel(String publicId, Status scheduleStatus) {
-        return processDeparture(publicId, scheduleStatus, Status.CANCELED);
+    // @PreAuthorize("hasAuthority('GRADE_ADMIN')")
+    public DepartureResult cancel(String publicId, DepartureCommand command) {
+        return processDeparture(publicId, command.getScheduleStatus(), Status.CANCELED);
     }
 
-    @PreAuthorize("hasAuthority('GRADE_ADMIN')")
-    public DepartureResponse delay(String publicId, Status scheduleStatus) {
-        return processDeparture(publicId, scheduleStatus, Status.DELAYED);
+    // @PreAuthorize("hasAuthority('GRADE_ADMIN')")
+    public DepartureResult delay(String publicId, DepartureCommand command) {
+        return processDeparture(publicId, command.getScheduleStatus(), Status.DELAYED);
     }
 
-    private DepartureResponse processDeparture(String publicId,
+    private DepartureResult processDeparture(String publicId,
                                                Status requestStatus, Status expectedStatus) {
 
         if (requestStatus != expectedStatus) {
@@ -79,6 +72,6 @@ public class DepartureService {
         // 메시지 발송
         List<MessageCommonDto> dto = messageService.sendMessage(phones, expectedStatus);
 
-        return DepartureResponse.from(dto);
+        return DepartureResult.from(dto);
     }
 }
