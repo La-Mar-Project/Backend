@@ -1,12 +1,15 @@
 package com.lamarfishing.core.schedule.controller;
 
 import com.lamarfishing.core.common.dto.response.ApiResponse;
+import com.lamarfishing.core.schedule.dto.command.ReservationPopupCommand;
 import com.lamarfishing.core.schedule.dto.request.ReservationPopupRequest;
 import com.lamarfishing.core.schedule.dto.response.EarlyReservationPopupResponse;
 import com.lamarfishing.core.schedule.dto.response.NormalReservationPopupResponse;
 import com.lamarfishing.core.schedule.dto.response.ReservationCreateResponse;
 import com.lamarfishing.core.schedule.dto.result.EarlyReservationPopupResult;
 import com.lamarfishing.core.schedule.dto.result.NormalReservationPopupResult;
+import com.lamarfishing.core.schedule.dto.result.ReservationCreateResult;
+import com.lamarfishing.core.schedule.service.command.ReservationPopupCommandService;
 import com.lamarfishing.core.schedule.service.query.ReservationPopupQueryService;
 import com.lamarfishing.core.user.domain.User;
 import com.lamarfishing.core.user.dto.command.AuthenticatedUser;
@@ -23,6 +26,8 @@ public class ReservationPopupController {
 
     private final ReservationPopupQueryService reservationPopupQueryService;
     private final UserService userService;
+    private final ReservationPopupCommandService reservationPopupCommandService;
+
     /**
      * 선예약 팝업 조회
      */
@@ -61,15 +66,13 @@ public class ReservationPopupController {
                                                                                     @PathVariable("schedulePublicId") String publicId,
                                                                                     @RequestBody ReservationPopupRequest req) {
         if(authenticatedUser == null){
-            ReservationCreateResponse reservationCreateResponse = reservationPopupQueryService.createReservationGuest(publicId,
-                    req.getUsername(), req.getNickname(), req.getPhone(), req.getHeadCount(), req.getRequest(), req.getCouponId());
+            ReservationCreateResult result = reservationPopupCommandService.createReservationGuest(publicId, ReservationPopupCommand.from(req));
 
-            return ResponseEntity.ok(ApiResponse.success("예약을 성공하였습니다.",reservationCreateResponse));
+            return ResponseEntity.ok(ApiResponse.success("비회원 예약을 성공하였습니다.", ReservationCreateResponse.from(result)));
         }
 
         User user = userService.findUser(authenticatedUser);
-        ReservationCreateResponse reservationCreateResponse = reservationPopupQueryService.createReservationUser(user, publicId,
-                req.getUsername(), req.getNickname(), req.getPhone(), req.getHeadCount(), req.getRequest(), req.getCouponId());
-        return ResponseEntity.ok(ApiResponse.success("예약을 성공하였습니다.",reservationCreateResponse));
+        ReservationCreateResult result = reservationPopupCommandService.createReservationUser(user, publicId, ReservationPopupCommand.from(req));
+        return ResponseEntity.ok(ApiResponse.success("회원 예약을 성공하였습니다.", ReservationCreateResponse.from(result)));
     }
 }

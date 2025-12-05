@@ -13,10 +13,12 @@ import com.lamarfishing.core.reservation.repository.ReservationRepository;
 import com.lamarfishing.core.reservation.service.command.ReservationCommandService;
 import com.lamarfishing.core.schedule.domain.Schedule;
 import com.lamarfishing.core.schedule.domain.Type;
+import com.lamarfishing.core.schedule.dto.command.ReservationPopupCommand;
 import com.lamarfishing.core.schedule.dto.response.NormalReservationPopupResponse;
 import com.lamarfishing.core.schedule.dto.response.ReservationCreateResponse;
 import com.lamarfishing.core.schedule.dto.result.EarlyReservationPopupResult;
 import com.lamarfishing.core.schedule.dto.result.NormalReservationPopupResult;
+import com.lamarfishing.core.schedule.dto.result.ReservationCreateResult;
 import com.lamarfishing.core.schedule.exception.InvalidHeadCount;
 import com.lamarfishing.core.schedule.exception.ScheduleNotFound;
 import com.lamarfishing.core.schedule.exception.UnauthorizedPopupAccess;
@@ -119,85 +121,6 @@ public class ReservationPopupQueryService {
 
         return NormalReservationPopupResult.of(schedule,remainHeadCount, normalReservationUserDto,reservationShipDto);
 
-    }
-
-    /**
-     * 회원 예약
-     */
-    @Transactional
-    @PreAuthorize("hasAnyAuthority('GRADE_ADMIN','GRADE_VIP','GRADE_BASIC')")
-    public ReservationCreateResponse createReservationUser(
-            User user, String publicId,
-            String username, String nickname, String phone, int headCount, String userRequest, Long couponId) {
-
-        ValidatePublicId.validateSchedulePublicId(publicId);
-
-        Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
-        Ship ship = schedule.getShip();
-
-        if(headCount + schedule.getCurrentHeadCount() > schedule.getShip().getMaxHeadCount()){
-            throw new InvalidHeadCount();
-        }
-        int totalPrice = ship.getPrice() * headCount;
-
-        Coupon coupon = null;
-        if (couponId != null) {
-            coupon = couponRepository.findById(couponId)
-                    .orElseThrow(CouponNotFound::new);
-
-            if (!coupon.getUser().equals(user)) {
-                throw new UnauthorizedCouponAccess();
-            }
-            coupon.use();
-        }
-
-        schedule.increaseCurrentHeadCount(headCount);
-        Reservation reservation = Reservation.create(headCount,userRequest,totalPrice, Reservation.Process.RESERVE_COMPLETED,user,schedule,coupon);
-        reservationRepository.save(reservation);
-
-        reservationCommandService.sendReservationReceiptNotification(user, schedule, ship, totalPrice, headCount);
-
-        statisticService.afterReservation(LocalDate.now(), publicId, headCount);
-
-        ReservationCreateResponse reservationCreateResponse = ReservationMapper.toReservationCreateResponse(reservation);
-
-        return reservationCreateResponse;
-    }
-
-    /**
-     * 비회원 예약
-     */
-    @Transactional
-    public ReservationCreateResponse createReservationGuest(String publicId, String username, String nickname,
-                                                            String phone, int headCount, String userRequest, Long couponId) {
-
-        ValidatePublicId.validateSchedulePublicId(publicId);
-
-        User user = User.createAnonymous(username, nickname, phone);
-        userRepository.save(user);
-
-        Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
-        Ship ship = schedule.getShip();
-
-        if(headCount + schedule.getCurrentHeadCount() > schedule.getShip().getMaxHeadCount()){
-            throw new InvalidHeadCount();
-        }
-        int totalPrice = ship.getPrice() * headCount;
-
-
-        Coupon coupon = null;
-
-        schedule.increaseCurrentHeadCount(headCount);
-        Reservation reservation = Reservation.create(headCount,userRequest,totalPrice, Reservation.Process.RESERVE_COMPLETED,user,schedule,coupon);
-        reservationRepository.save(reservation);
-
-        reservationCommandService.sendReservationReceiptNotification(user, schedule, ship, totalPrice, headCount);
-
-        statisticService.afterReservation(LocalDate.now(), publicId, headCount);
-
-        ReservationCreateResponse reservationCreateResponse = ReservationMapper.toReservationCreateResponse(reservation);
-
-        return reservationCreateResponse;
     }
 
     private Coupon.Type getCouponTypeByDeparture(LocalDateTime departure) {

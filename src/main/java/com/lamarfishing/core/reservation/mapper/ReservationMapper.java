@@ -4,6 +4,7 @@ import com.lamarfishing.core.reservation.domain.Reservation;
 import com.lamarfishing.core.reservation.dto.common.ReservationCommonDto;
 import com.lamarfishing.core.reservation.dto.common.ReservationDetailDto;
 import com.lamarfishing.core.schedule.dto.response.ReservationCreateResponse;
+import com.lamarfishing.core.schedule.dto.result.ReservationCreateResult;
 import com.lamarfishing.core.user.domain.Grade;
 
 public class ReservationMapper {
@@ -21,8 +22,8 @@ public class ReservationMapper {
                 .build();
     }
 
-    public static ReservationCreateResponse toReservationCreateResponse(Reservation reservation) {
-        return ReservationCreateResponse.builder()
+    public static ReservationCreateResult toReservationCreateResult(Reservation reservation) {
+        return ReservationCreateResult.builder()
                 .reservationPublicId(reservation.getPublicId())
                 .build();
     }
