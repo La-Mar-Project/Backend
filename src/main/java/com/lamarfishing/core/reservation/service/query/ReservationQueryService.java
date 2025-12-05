@@ -11,7 +11,7 @@ import com.lamarfishing.core.schedule.domain.Schedule;
 import com.lamarfishing.core.schedule.dto.common.ReservationDetailScheduleDto;
 import com.lamarfishing.core.schedule.mapper.ScheduleMapper;
 import com.lamarfishing.core.ship.domain.Ship;
-import com.lamarfishing.core.ship.dto.command.ReservationDetailShipDto;
+import com.lamarfishing.core.ship.dto.result.ReservationDetailShipDto;
 import com.lamarfishing.core.ship.mapper.ShipMapper;
 import com.lamarfishing.core.user.domain.Grade;
 import com.lamarfishing.core.user.domain.User;

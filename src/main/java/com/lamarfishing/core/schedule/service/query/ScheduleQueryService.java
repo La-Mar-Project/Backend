@@ -13,7 +13,7 @@ import com.lamarfishing.core.schedule.exception.ScheduleNotFound;
 import com.lamarfishing.core.schedule.mapper.ScheduleMapper;
 import com.lamarfishing.core.schedule.repository.ScheduleRepository;
 import com.lamarfishing.core.ship.domain.Ship;
-import com.lamarfishing.core.ship.dto.command.ShipDetailDto;
+import com.lamarfishing.core.ship.dto.result.ShipDetailDto;
 import com.lamarfishing.core.ship.mapper.ShipMapper;
 import com.lamarfishing.core.validate.ValidatePublicId;
 import lombok.RequiredArgsConstructor;

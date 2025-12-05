@@ -1,9 +1,9 @@
 package com.lamarfishing.core.ship.mapper;
 
 import com.lamarfishing.core.ship.domain.Ship;
-import com.lamarfishing.core.ship.dto.command.ReservationDetailShipDto;
-import com.lamarfishing.core.ship.dto.command.ShipDetailDto;
-import com.lamarfishing.core.ship.dto.command.ReservationShipDto;
+import com.lamarfishing.core.ship.dto.result.ReservationDetailShipDto;
+import com.lamarfishing.core.ship.dto.result.ShipDetailDto;
+import com.lamarfishing.core.ship.dto.result.ReservationShipDto;
 
 public class ShipMapper {
 

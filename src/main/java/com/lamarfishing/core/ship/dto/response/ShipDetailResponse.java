@@ -1,10 +1,8 @@
 package com.lamarfishing.core.ship.dto.response;
 
-import com.lamarfishing.core.ship.dto.command.ShipDetailDto;
+import com.lamarfishing.core.ship.dto.result.ShipDetailDto;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 @Builder

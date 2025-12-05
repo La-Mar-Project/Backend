@@ -1,4 +1,4 @@
-package com.lamarfishing.core.ship.dto.command;
+package com.lamarfishing.core.ship.dto.result;
 
 import lombok.Builder;
 import lombok.Data;
