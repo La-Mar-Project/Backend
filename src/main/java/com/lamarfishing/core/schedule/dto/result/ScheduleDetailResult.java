@@ -1,9 +1,7 @@
-package com.lamarfishing.core.schedule.dto.response;
-
+package com.lamarfishing.core.schedule.dto.result;
 
 import com.lamarfishing.core.reservation.dto.common.ReservationCommonDto;
 import com.lamarfishing.core.schedule.dto.common.ScheduleDetailDto;
-import com.lamarfishing.core.schedule.dto.result.ScheduleDetailResult;
 import com.lamarfishing.core.ship.dto.command.ShipDetailDto;
 import lombok.Builder;
 import lombok.Data;
@@ -12,17 +10,17 @@ import java.util.List;
 
 @Data
 @Builder
-public class ScheduleDetailResponse {
+public class ScheduleDetailResult {
 
     private ShipDetailDto ship;
     private ScheduleDetailDto schedule;
     private List<ReservationCommonDto> reservations;
 
-    public static ScheduleDetailResponse from(ScheduleDetailResult result){
-        return ScheduleDetailResponse.builder()
-                .ship(result.getShip())
-                .schedule(result.getSchedule())
-                .reservations(result.getReservations())
+    public static ScheduleDetailResult of(ShipDetailDto shipDetailDto, ScheduleDetailDto scheduleDetailDto, List<ReservationCommonDto> reservations) {
+        return ScheduleDetailResult.builder()
+                .ship(shipDetailDto)
+                .schedule(scheduleDetailDto)
+                .reservations(reservations)
                 .build();
     }
 

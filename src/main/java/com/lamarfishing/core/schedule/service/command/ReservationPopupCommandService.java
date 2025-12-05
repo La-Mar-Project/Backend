@@ -17,6 +17,7 @@ import com.lamarfishing.core.schedule.exception.ScheduleNotFound;
 import com.lamarfishing.core.schedule.repository.ScheduleRepository;
 import com.lamarfishing.core.ship.domain.Ship;
 import com.lamarfishing.core.user.domain.User;
+import com.lamarfishing.core.user.repository.UserRepository;
 import com.lamarfishing.core.user.service.UserService;
 import com.lamarfishing.core.validate.ValidatePublicId;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class ReservationPopupCommandService {
     private final ReservationRepository reservationRepository;
     private final ReservationCommandService reservationCommandService;
     private final StatisticService statisticService;
-    private final UserService userService;
+    private final UserRepository userRepository;
     /**
      * 회원 예약
      */
