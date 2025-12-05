@@ -1,10 +1,9 @@
 package com.lamarfishing.core.reservation.repository;
 
-import com.lamarfishing.core.log.message.domain.QMessageLog;
 import com.lamarfishing.core.reservation.domain.QReservation;
 import com.lamarfishing.core.schedule.domain.QSchedule;
 import com.lamarfishing.core.ship.domain.QShip;
-import com.lamarfishing.core.reservation.dto.command.ReservationSimpleDto;
+import com.lamarfishing.core.reservation.dto.response.ReservationSimpleDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;

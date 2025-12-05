@@ -4,12 +4,13 @@ import com.lamarfishing.core.common.dto.response.ApiResponse;
 import com.lamarfishing.core.common.dto.response.PageResponse;
 import com.lamarfishing.core.coupon.service.CouponCommandService;
 import com.lamarfishing.core.reservation.domain.Reservation;
-import com.lamarfishing.core.reservation.dto.command.ReservationSimpleDto;
+import com.lamarfishing.core.reservation.dto.command.ReservationProcessUpdateCommand;
+import com.lamarfishing.core.reservation.dto.response.ReservationSimpleDto;
 import com.lamarfishing.core.reservation.dto.request.ReservationProcessUpdateRequest;
 import com.lamarfishing.core.reservation.dto.response.ReservationDetailResponse;
 import com.lamarfishing.core.reservation.dto.result.ReservationDetailResult;
 import com.lamarfishing.core.reservation.service.ReservationQueryService;
-import com.lamarfishing.core.reservation.service.ReservationService;
+import com.lamarfishing.core.reservation.service.ReservationCommandService;
 import com.lamarfishing.core.user.domain.User;
 import com.lamarfishing.core.user.dto.command.AuthenticatedUser;
 import com.lamarfishing.core.user.service.UserService;
@@ -29,7 +30,7 @@ import java.time.LocalDateTime;
 public class ReservationController {
 
     private final ReservationQueryService reservationQueryService;
-    private final ReservationService reservationService;
+    private final ReservationCommandService reservationCommandService;
     private final CouponCommandService couponCommandService;
     private final UserService userService;
 
@@ -42,7 +43,7 @@ public class ReservationController {
                                                                                        @PathVariable("reservationPublicId") String publicId){
         // User user = userService.findUser(authenticatedUser);
         User user = userService.findBasicUser();
-        ReservationDetailResult result = reservationService.getReservationDetail(user, publicId);
+        ReservationDetailResult result = reservationQueryService.getReservationDetail(user, publicId);
 
         return ResponseEntity.ok(ApiResponse.success("예약 상세 조회에 성공하였습니다.", ReservationDetailResponse.from(result)));
     }
@@ -51,7 +52,7 @@ public class ReservationController {
      * 쿠폰 발급
      */
     @PostMapping("/{reservationPublicId}/coupon")
-    public ResponseEntity<ApiResponse<Void>> issueCoupon(@AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+    public ResponseEntity<ApiResponse<Void>> issueCoupon(// @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
                                                          @PathVariable("reservationPublicId") String publicId) {
 
         couponCommandService.issueCoupon(publicId);
@@ -67,10 +68,10 @@ public class ReservationController {
                                                                       @PathVariable("reservationPublicId") String publicId,
                                                                       @RequestBody ReservationProcessUpdateRequest request) {
         User user = userService.findUser(authenticatedUser);
-        Process process = request.getProcess();
-        reservationService.reservationCancelRequest(publicId, process);
+        ReservationProcessUpdateCommand command = ReservationProcessUpdateCommand.from(request);
+        reservationCommandService.reservationCancelRequest(publicId, command);
 
-        return ResponseEntity.ok(ApiResponse.success("예약 취소에 성공하였습니다."));
+        return ResponseEntity.ok(ApiResponse.success("예약 취소에 성공하였습니다.", null));
     }
 
     /**
@@ -81,7 +82,7 @@ public class ReservationController {
                                                                       @PathVariable("reservationPublicId") String publicId,
                                                                       @RequestBody ReservationProcessUpdateRequest request) {
         Reservation.Process process = request.getProcess();
-        reservationService.changeReservationProcess(publicId, process);
+        reservationCommandService.changeReservationProcess(publicId, process);
 
         return ResponseEntity.ok(ApiResponse.success("예약 취소에 성공하였습니다."));
     }

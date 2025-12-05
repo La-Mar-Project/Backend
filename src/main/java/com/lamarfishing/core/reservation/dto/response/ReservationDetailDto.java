@@ -1,4 +1,4 @@
-package com.lamarfishing.core.reservation.dto.command;
+package com.lamarfishing.core.reservation.dto.response;
 
 import com.lamarfishing.core.reservation.domain.Reservation;
 import lombok.Builder;

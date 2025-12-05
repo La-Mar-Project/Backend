@@ -1,15 +1,13 @@
 package com.lamarfishing.core.schedule.service;
 
 import com.lamarfishing.core.reservation.domain.Reservation;
-import com.lamarfishing.core.reservation.dto.command.ReservationCommonDto;
+import com.lamarfishing.core.reservation.dto.response.ReservationCommonDto;
 import com.lamarfishing.core.reservation.mapper.ReservationMapper;
 import com.lamarfishing.core.reservation.repository.ReservationRepository;
 import com.lamarfishing.core.schedule.domain.Schedule;
 import com.lamarfishing.core.schedule.domain.Status;
 import com.lamarfishing.core.schedule.domain.Type;
 import com.lamarfishing.core.schedule.dto.command.ScheduleDetailDto;
-import com.lamarfishing.core.schedule.dto.request.ScheduleCreateRequest;
-import com.lamarfishing.core.schedule.dto.request.UpdateDepartureTimeRequest;
 import com.lamarfishing.core.schedule.dto.response.ScheduleDetailResponse;
 import com.lamarfishing.core.schedule.dto.response.ViewDepartureTimeResponse;
 import com.lamarfishing.core.schedule.exception.*;
@@ -20,10 +18,7 @@ import com.lamarfishing.core.ship.dto.command.ShipDetailDto;
 import com.lamarfishing.core.ship.exception.ShipNotFound;
 import com.lamarfishing.core.ship.mapper.ShipMapper;
 import com.lamarfishing.core.ship.repository.ShipRepository;
-import com.lamarfishing.core.user.domain.Grade;
 import com.lamarfishing.core.user.domain.User;
-import com.lamarfishing.core.user.exception.InvalidUserGrade;
-import com.lamarfishing.core.user.exception.UserNotFound;
 import com.lamarfishing.core.user.repository.UserRepository;
 import com.lamarfishing.core.validate.ValidatePublicId;
 import lombok.RequiredArgsConstructor;

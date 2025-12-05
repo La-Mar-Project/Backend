@@ -1,7 +1,22 @@
 package com.lamarfishing.core.reservation.service;
 
+import com.lamarfishing.core.reservation.domain.Reservation;
+import com.lamarfishing.core.reservation.dto.response.ReservationDetailDto;
+import com.lamarfishing.core.reservation.dto.result.ReservationDetailResult;
+import com.lamarfishing.core.reservation.exception.ReservationNotFound;
+import com.lamarfishing.core.reservation.mapper.ReservationMapper;
 import com.lamarfishing.core.reservation.repository.ReservationRepository;
-import com.lamarfishing.core.reservation.dto.command.ReservationSimpleDto;
+import com.lamarfishing.core.reservation.dto.response.ReservationSimpleDto;
+import com.lamarfishing.core.schedule.domain.Schedule;
+import com.lamarfishing.core.schedule.dto.command.ReservationDetailScheduleDto;
+import com.lamarfishing.core.schedule.mapper.ScheduleMapper;
+import com.lamarfishing.core.ship.domain.Ship;
+import com.lamarfishing.core.ship.dto.command.ReservationDetailShipDto;
+import com.lamarfishing.core.ship.mapper.ShipMapper;
+import com.lamarfishing.core.user.domain.Grade;
+import com.lamarfishing.core.user.domain.User;
+import com.lamarfishing.core.user.exception.InvalidUserGrade;
+import com.lamarfishing.core.validate.ValidatePublicId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,5 +40,37 @@ public class ReservationQueryService {
     @PreAuthorize("hasAuthority('GRADE_ADMIN')")
     public Page<ReservationSimpleDto> getReservations(Process process, LocalDateTime from, LocalDateTime to, Long shipId, Pageable pageable) {
         return reservationRepository.getReservations(null, process, from, to, shipId, pageable);
+    }
+
+    // @PreAuthorize("hasAnyAuthority('GRADE_ADMIN','GRADE_BAISC','GRADE_VIP')")
+    public ReservationDetailResult getReservationDetail(User user, String publicId) {
+
+        ValidatePublicId.validateReservationPublicId(publicId);
+
+        Reservation reservation = findReservation(publicId);
+
+        boolean isAdmin = user.getGrade() == Grade.ADMIN;
+        boolean isOwner = reservation.getUser().equals(user);
+        if (!isAdmin && !isOwner) {
+            throw new InvalidUserGrade();
+        }
+
+        Schedule schedule = reservation.getSchedule();
+        Ship ship = schedule.getShip();
+
+        ReservationDetailShipDto reservationDetailShipDto = ShipMapper.toReservationDetailShipDto(ship);
+        ReservationDetailDto reservationDetailDto = ReservationMapper.toReservationDetailDto(reservation);
+        ReservationDetailScheduleDto reservationDetailScheduleDto = ScheduleMapper.toReservationDetailScheduleDto(schedule);
+
+        return ReservationDetailResult.from(
+                reservationDetailShipDto,
+                reservationDetailDto,
+                reservationDetailScheduleDto
+        );
+    }
+
+    private Reservation findReservation(String pubilcId){
+        Reservation reservation = reservationRepository.findByPublicId(pubilcId).orElseThrow(ReservationNotFound::new);
+        return reservation;
     }
 }

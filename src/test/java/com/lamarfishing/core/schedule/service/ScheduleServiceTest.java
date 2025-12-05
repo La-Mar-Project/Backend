@@ -1,7 +1,7 @@
 package com.lamarfishing.core.schedule.service;
 
 import com.lamarfishing.core.reservation.domain.Reservation;
-import com.lamarfishing.core.reservation.dto.command.ReservationCommonDto;
+import com.lamarfishing.core.reservation.dto.response.ReservationCommonDto;
 import com.lamarfishing.core.reservation.repository.ReservationRepository;
 import com.lamarfishing.core.schedule.domain.Schedule;
 import com.lamarfishing.core.schedule.domain.Status;
@@ -12,7 +12,6 @@ import com.lamarfishing.core.ship.domain.Ship;
 import com.lamarfishing.core.user.domain.Grade;
 import com.lamarfishing.core.user.domain.Provider;
 import com.lamarfishing.core.user.domain.User;
-import org.hibernate.service.spi.InjectService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)

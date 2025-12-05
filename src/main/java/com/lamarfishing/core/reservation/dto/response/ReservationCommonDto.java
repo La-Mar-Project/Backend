@@ -1,10 +1,8 @@
-package com.lamarfishing.core.reservation.dto.command;
+package com.lamarfishing.core.reservation.dto.response;
 import com.lamarfishing.core.reservation.domain.Reservation;
 import com.lamarfishing.core.user.domain.Grade;
 import lombok.Builder;
 import lombok.Getter;
-
-import static com.lamarfishing.core.user.domain.User.*;
 
 /**
  * 출항 일정 상세보기에 사용되는 dto

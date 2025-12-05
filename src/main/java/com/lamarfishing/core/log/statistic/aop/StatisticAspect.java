@@ -26,7 +26,7 @@ public class StatisticAspect {
     }
 
     // 일간 입금 확인자 수 집계
-    @AfterReturning(value = "execution(* com.lamarfishing.core.reservation.service.ReservationService.changeReservationProcess(..)) "
+    @AfterReturning(value = "execution(* com.lamarfishing.core.reservation.service.ReservationCommandService.changeReservationProcess(..)) "
             + "&& args(userId, publicId, requestProcess)", argNames = "userId,publicId,requestProcess")
     public void afterDeposit(Long userId, String publicId, Reservation.Process requestProcess) {
         if (requestProcess != Reservation.Process.DEPOSIT_COMPLETED) {

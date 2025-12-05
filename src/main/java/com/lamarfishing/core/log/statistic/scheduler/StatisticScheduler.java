@@ -1,6 +1,6 @@
 package com.lamarfishing.core.log.statistic.scheduler;
 
-import com.lamarfishing.core.reservation.service.ReservationService;
+import com.lamarfishing.core.reservation.service.ReservationCommandService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -9,12 +9,14 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class StatisticScheduler {
 
-    private final ReservationService reservationService;
+    private final ReservationCommandService reservationCommandService;
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
-    public void statisticPaymentDeadlineWarning(){reservationService.statisticPaymentDeadlineWarning();}
+    public void statisticPaymentDeadlineWarning(){
+        reservationCommandService.statisticPaymentDeadlineWarning();}
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
-    public void statisticPaymentExpiredNotification(){reservationService.statisticPaymentExpiredNotification();}
+    public void statisticPaymentExpiredNotification(){
+        reservationCommandService.statisticPaymentExpiredNotification();}
 
 }

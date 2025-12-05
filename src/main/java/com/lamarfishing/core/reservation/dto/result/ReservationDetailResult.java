@@ -1,7 +1,6 @@
 package com.lamarfishing.core.reservation.dto.result;
 
-import com.lamarfishing.core.reservation.dto.command.ReservationDetailDto;
-import com.lamarfishing.core.reservation.dto.response.ReservationDetailResponse;
+import com.lamarfishing.core.reservation.dto.response.ReservationDetailDto;
 import com.lamarfishing.core.schedule.dto.command.ReservationDetailScheduleDto;
 import com.lamarfishing.core.ship.dto.command.ReservationDetailShipDto;
 import lombok.Builder;

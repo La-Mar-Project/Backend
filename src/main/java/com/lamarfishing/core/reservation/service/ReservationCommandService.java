@@ -4,30 +4,18 @@ import com.lamarfishing.core.log.statistic.domain.Statistic;
 import com.lamarfishing.core.log.statistic.repository.StatisticRepository;
 import com.lamarfishing.core.message.service.MessageService;
 import com.lamarfishing.core.reservation.domain.Reservation;
-import com.lamarfishing.core.reservation.dto.command.ReservationDetailDto;
-import com.lamarfishing.core.reservation.dto.request.ReservationProcessUpdateRequest;
-import com.lamarfishing.core.reservation.dto.response.ReservationDetailResponse;
-import com.lamarfishing.core.reservation.dto.result.ReservationDetailResult;
+import com.lamarfishing.core.reservation.dto.command.ReservationProcessUpdateCommand;
 import com.lamarfishing.core.reservation.exception.InvalidRequestContent;
 import com.lamarfishing.core.reservation.exception.ReservationNotFound;
-import com.lamarfishing.core.reservation.mapper.ReservationMapper;
 import com.lamarfishing.core.reservation.repository.ReservationRepository;
 import com.lamarfishing.core.schedule.domain.Schedule;
-import com.lamarfishing.core.schedule.dto.command.ReservationDetailScheduleDto;
-import com.lamarfishing.core.schedule.mapper.ScheduleMapper;
 import com.lamarfishing.core.schedule.repository.ScheduleRepository;
 import com.lamarfishing.core.ship.domain.Ship;
-import com.lamarfishing.core.ship.dto.command.ReservationDetailShipDto;
-import com.lamarfishing.core.ship.mapper.ShipMapper;
-import com.lamarfishing.core.user.domain.Grade;
 import com.lamarfishing.core.user.domain.User;
-import com.lamarfishing.core.user.exception.InvalidUserGrade;
-import com.lamarfishing.core.user.exception.UserNotFound;
 import com.lamarfishing.core.user.repository.UserRepository;
 import com.lamarfishing.core.validate.ValidatePublicId;
 import com.lamarfishing.core.reservation.domain.Reservation.Process;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,8 +29,8 @@ import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
-public class ReservationService {
+@Transactional
+public class ReservationCommandService {
 
     private final UserRepository userRepository;
     private final ReservationRepository reservationRepository;
@@ -50,49 +38,24 @@ public class ReservationService {
     private final MessageService messageService;
     private final StatisticRepository statisticRepository;
 
-    // @PreAuthorize("hasAnyAuthority('GRADE_ADMIN','GRADE_BAISC','GRADE_VIP')")
-    public ReservationDetailResult getReservationDetail(User user, String publicId) {
 
-        ValidatePublicId.validateReservationPublicId(publicId);
-
-        Reservation reservation = findReservation(publicId);
-
-        boolean isAdmin = user.getGrade() == Grade.ADMIN;
-        boolean isOwner = reservation.getUser().equals(user);
-        if (!isAdmin && !isOwner) {
-            throw new InvalidUserGrade();
-        }
-
-        Schedule schedule = reservation.getSchedule();
-        Ship ship = schedule.getShip();
-
-        ReservationDetailShipDto reservationDetailShipDto = ShipMapper.toReservationDetailShipDto(ship);
-        ReservationDetailDto reservationDetailDto = ReservationMapper.toReservationDetailDto(reservation);
-        ReservationDetailScheduleDto reservationDetailScheduleDto = ScheduleMapper.toReservationDetailScheduleDto(schedule);
-
-        return ReservationDetailResult.from(
-                reservationDetailShipDto,
-                reservationDetailDto,
-                reservationDetailScheduleDto
-        );
-    }
 
     /**
      * 일반 유저가 예약
      */
-    @Transactional
     @PreAuthorize("hasAnyAuthority('GRADE_BASIC', 'GRADE_VIP')")
-    public void reservationCancelRequest(String publicId, Process requestProcess) {
+    public void reservationCancelRequest(String publicId, ReservationProcessUpdateCommand command) {
 
         ValidatePublicId.validateReservationPublicId(publicId);
 
         Reservation reservation = findReservation(publicId);
+        Process process = command.getProcess();
 
-        if (requestProcess != Reservation.Process.CANCEL_REQUESTED) {
+        if (process != Reservation.Process.CANCEL_REQUESTED) {
             throw new InvalidRequestContent();
         }
 
-        reservation.changeProcess(requestProcess);
+        reservation.changeProcess(process);
     }
 
     /**

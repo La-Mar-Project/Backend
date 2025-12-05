@@ -10,10 +10,9 @@ import com.lamarfishing.core.log.statistic.service.StatisticService;
 import com.lamarfishing.core.reservation.domain.Reservation;
 import com.lamarfishing.core.reservation.mapper.ReservationMapper;
 import com.lamarfishing.core.reservation.repository.ReservationRepository;
-import com.lamarfishing.core.reservation.service.ReservationService;
+import com.lamarfishing.core.reservation.service.ReservationCommandService;
 import com.lamarfishing.core.schedule.domain.Schedule;
 import com.lamarfishing.core.schedule.domain.Type;
-import com.lamarfishing.core.schedule.dto.request.ReservationPopupRequest;
 import com.lamarfishing.core.schedule.dto.response.EarlyReservationPopupResponse;
 import com.lamarfishing.core.schedule.dto.response.NormalReservationPopupResponse;
 import com.lamarfishing.core.schedule.dto.response.ReservationCreateResponse;
@@ -25,11 +24,9 @@ import com.lamarfishing.core.schedule.repository.ScheduleRepository;
 import com.lamarfishing.core.ship.domain.Ship;
 import com.lamarfishing.core.ship.dto.command.ReservationShipDto;
 import com.lamarfishing.core.ship.mapper.ShipMapper;
-import com.lamarfishing.core.user.domain.Grade;
 import com.lamarfishing.core.user.domain.User;
 import com.lamarfishing.core.user.dto.command.EarlyReservationUserDto;
 import com.lamarfishing.core.user.dto.command.NormalReservationUserDto;
-import com.lamarfishing.core.user.exception.UserNotFound;
 import com.lamarfishing.core.user.mapper.UserMapper;
 import com.lamarfishing.core.user.repository.UserRepository;
 import com.lamarfishing.core.validate.ValidatePublicId;
@@ -56,7 +53,7 @@ public class ReservationPopupService {
     private final UserRepository userRepository;
     private final CouponRepository couponRepository;
     private final ReservationRepository reservationRepository;
-    private final ReservationService reservationService;
+    private final ReservationCommandService reservationCommandService;
 
     /**
      * 선예약 팝업 조회
@@ -159,7 +156,7 @@ public class ReservationPopupService {
         Reservation reservation = Reservation.create(headCount,userRequest,totalPrice, Reservation.Process.RESERVE_COMPLETED,user,schedule,coupon);
         reservationRepository.save(reservation);
 
-        reservationService.sendReservationReceiptNotification(user, schedule, ship, totalPrice, headCount);
+        reservationCommandService.sendReservationReceiptNotification(user, schedule, ship, totalPrice, headCount);
 
         statisticService.afterReservation(LocalDate.now(), publicId, headCount);
 
@@ -195,7 +192,7 @@ public class ReservationPopupService {
         Reservation reservation = Reservation.create(headCount,userRequest,totalPrice, Reservation.Process.RESERVE_COMPLETED,user,schedule,coupon);
         reservationRepository.save(reservation);
 
-        reservationService.sendReservationReceiptNotification(user, schedule, ship, totalPrice, headCount);
+        reservationCommandService.sendReservationReceiptNotification(user, schedule, ship, totalPrice, headCount);
 
         statisticService.afterReservation(LocalDate.now(), publicId, headCount);
 
