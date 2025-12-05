@@ -38,39 +38,20 @@ public class MessageService {
 
     @PreAuthorize("hasAuthority('GRADE_ADMIN')")
     public List<MessageCommonDto> sendMessage(List<String> phones, Status status) {
-
-        List<String> failedPhones = new ArrayList<>();
-        List<MessageCommonDto> results = new ArrayList<>();
-        String content = status.message();
-
-        for (String to : phones) {
-
-            Message msg = new Message();
-            msg.setFrom(senderNumber);
-            msg.setTo(to);
-            msg.setText(content);
-
-            try {
-                messageService.send(msg);
-            } catch (Exception e) {
-                failedPhones.add(to);
-            }
-        }
-
-        if (!failedPhones.isEmpty()) {
-            throw new MessageSendFailedException("전송 실패: " + failedPhones, failedPhones);
-        }
-        return results;
+        return doSendMessage(phones, status.message());
     }
 
     @PreAuthorize("hasAuthority('GRADE_ADMIN')")
     public List<MessageCommonDto> sendMessage(List<String> phones, String content) {
+        return doSendMessage(phones, content);
+    }
+
+    private List<MessageCommonDto> doSendMessage(List<String> phones, String content) {
 
         List<String> failedPhones = new ArrayList<>();
         List<MessageCommonDto> results = new ArrayList<>();
 
         for (String to : phones) {
-
             Message msg = new Message();
             msg.setFrom(senderNumber);
             msg.setTo(to);
@@ -86,6 +67,7 @@ public class MessageService {
         if (!failedPhones.isEmpty()) {
             throw new MessageSendFailedException("전송 실패: " + failedPhones, failedPhones);
         }
+
         return results;
     }
 }
