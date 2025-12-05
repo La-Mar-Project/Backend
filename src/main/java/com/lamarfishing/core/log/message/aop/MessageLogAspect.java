@@ -22,7 +22,7 @@ public class MessageLogAspect {
     private final MessageLogRepository messageLogRepository;
 
     @AfterReturning(
-            pointcut = "execution(* com.lamarfishing.core.message.service.MessageService.*(..)) && args(phones, status)"
+            pointcut = "execution(* com.lamarfishing.core.message.service.command.MessageCommandService.*(..)) && args(phones, status)"
     )
     public void successLog(List<String> phones, Status status) {
 
@@ -33,7 +33,7 @@ public class MessageLogAspect {
     }
 
     @AfterReturning(
-            pointcut = "execution(* com.lamarfishing.core.message.service.MessageService.*(..)) && args(phones, content)"
+            pointcut = "execution(* com.lamarfishing.core.message.service.command.MessageCommandService.*(..)) && args(phones, content)"
     )
     public void successLog(List<String> phones, String content) {
 
@@ -44,7 +44,7 @@ public class MessageLogAspect {
     }
 
     @AfterThrowing(
-            pointcut = "execution(* com.lamarfishing.core.message.service.MessageService.*(..)) && args(phones, status)",
+            pointcut = "execution(* com.lamarfishing.core.message.service.command.MessageCommandService.*(..)) && args(phones, status)",
             throwing = "ex"
     )
     public void failureLog(List<String> phones, Status status, MessageSendFailedException ex) {

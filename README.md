@@ -46,3 +46,11 @@
 - 관리자 예약 취소 완료 시 자동 메시지 발송
 - 출항 확정 / 연기 / 취소 시 자동 메시지 발송
 - SOLAPI 연동
+
+---
+### 리팩토링 목표
+이번 리팩토링의 주요 목표는 다음과 같습니다.
+- 레이어 간 책임을 명확히 분리(SRP)하여 결합도를 낮춤
+- Request DTO와 Service 내부 Input 모델(Command DTO) 분리
+- Response/Detail/Common DTO 구조 재정비로 재사용성 향상
+- 읽기/쓰기 로직을 CommandService / QueryService로 구분 (CQRS)

@@ -5,7 +5,7 @@ import com.lamarfishing.core.schedule.domain.Status;
 import com.lamarfishing.core.schedule.dto.command.DepartureCommand;
 import com.lamarfishing.core.schedule.dto.result.DepartureResult;
 import com.lamarfishing.core.schedule.exception.InvalidDepartureRequest;
-import com.lamarfishing.core.message.service.MessageService;
+import com.lamarfishing.core.message.service.command.MessageCommandService;
 import com.lamarfishing.core.reservation.domain.Reservation;
 import com.lamarfishing.core.reservation.repository.ReservationRepository;
 import com.lamarfishing.core.schedule.domain.Schedule;
@@ -25,7 +25,7 @@ import java.util.List;
 public class DepartureCommandService {
     private final ScheduleRepository scheduleRepository;
     private final ReservationRepository reservationRepository;
-    private final MessageService messageService;
+    private final MessageCommandService messageCommandService;
 
     //출항 확정
     // @PreAuthorize("hasAuthority('GRADE_ADMIN')")
@@ -69,7 +69,7 @@ public class DepartureCommandService {
         }
 
         // 메시지 발송
-        List<MessageCommonDto> dto = messageService.sendMessage(phones, expectedStatus);
+        List<MessageCommonDto> dto = messageCommandService.sendMessage(phones, expectedStatus);
 
         return DepartureResult.from(dto);
     }

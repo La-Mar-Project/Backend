@@ -1,10 +1,9 @@
-package com.lamarfishing.core.message.service;
+package com.lamarfishing.core.message.service.command;
 
 import com.lamarfishing.core.message.dto.command.MessageCommonDto;
 import com.lamarfishing.core.message.dto.exception.MessageSendFailedException;
 import com.lamarfishing.core.schedule.domain.Status;
 import com.solapi.sdk.SolapiClient;
-import com.solapi.sdk.message.exception.SolapiMessageNotReceivedException;
 import com.solapi.sdk.message.model.Message;
 import com.solapi.sdk.message.service.DefaultMessageService;
 import jakarta.annotation.PostConstruct;
@@ -18,7 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class MessageService {
+public class MessageCommandService {
 
     private DefaultMessageService messageService;
 

@@ -2,7 +2,7 @@ package com.lamarfishing.core.reservation.service.command;
 
 import com.lamarfishing.core.log.statistic.domain.Statistic;
 import com.lamarfishing.core.log.statistic.repository.StatisticRepository;
-import com.lamarfishing.core.message.service.MessageService;
+import com.lamarfishing.core.message.service.command.MessageCommandService;
 import com.lamarfishing.core.reservation.domain.Reservation;
 import com.lamarfishing.core.reservation.dto.command.ReservationProcessUpdateCommand;
 import com.lamarfishing.core.reservation.exception.InvalidRequestContent;
@@ -34,7 +34,7 @@ public class ReservationCommandService {
     private final UserRepository userRepository;
     private final ReservationRepository reservationRepository;
     private final ScheduleRepository scheduleRepository;
-    private final MessageService messageService;
+    private final MessageCommandService messageCommandService;
     private final StatisticRepository statisticRepository;
 
 
@@ -183,7 +183,7 @@ public class ReservationCommandService {
 
         String msg = createPaymentWarningMessage(schedule);
 
-        messageService.sendMessage(phones,msg);
+        messageCommandService.sendMessage(phones,msg);
     }
 
     /**
@@ -215,7 +215,7 @@ public class ReservationCommandService {
 
         String msg = createPaymentExpiredMessage(schedule);
 
-        messageService.sendMessage(phones,msg);
+        messageCommandService.sendMessage(phones,msg);
     }
 
     public void sendReservationReceiptNotification(User user,Schedule schedule,Ship ship,int totalPrice, int headCount){
@@ -239,7 +239,7 @@ public class ReservationCommandService {
                 "입금금액: " + strTotalPrice + "원\n" +
                 "문의사항은 010-6264-7243으로 연락주세요";
 
-        messageService.sendMessage(phones,msg);
+        messageCommandService.sendMessage(phones,msg);
     }
 
     public void sendReservationCanceledNotification(Reservation reservation){
@@ -261,7 +261,7 @@ public class ReservationCommandService {
                 "취소인원: " + reservation.getHeadCount() + "\n" +
                 "환불금액: " + strTotalPrice + "원";
 
-        messageService.sendMessage(phones,msg);
+        messageCommandService.sendMessage(phones,msg);
     }
 
     private String formatWithComma(int number) {
