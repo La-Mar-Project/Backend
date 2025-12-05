@@ -1,4 +1,4 @@
-package com.lamarfishing.core.coupon.service;
+package com.lamarfishing.core.coupon.service.command;
 
 import com.lamarfishing.core.coupon.domain.Coupon;
 import com.lamarfishing.core.coupon.repository.CouponRepository;

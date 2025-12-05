@@ -1,6 +1,7 @@
 package com.lamarfishing.core.schedule.dto.response;
 
 import com.lamarfishing.core.schedule.domain.Schedule;
+import com.lamarfishing.core.schedule.dto.result.EarlyReservationPopupResult;
 import com.lamarfishing.core.ship.dto.command.ReservationShipDto;
 import com.lamarfishing.core.user.dto.command.EarlyReservationUserDto;
 import lombok.Builder;
@@ -23,15 +24,15 @@ public class EarlyReservationPopupResponse {
     private DayOfWeek dayOfWeek;
     private Integer tide;
 
-    public static EarlyReservationPopupResponse from(Schedule schedule, Integer remainHeadCount, EarlyReservationUserDto user, ReservationShipDto ship) {
+    public static EarlyReservationPopupResponse from(EarlyReservationPopupResult result) {
         return EarlyReservationPopupResponse.builder()
-                .ship(ship)
-                .user(user)
-                .schedulePublicId(schedule.getPublicId())
-                .remainHeadCount(remainHeadCount)
-                .departure(schedule.getDeparture())
-                .dayOfWeek(schedule.getDeparture().getDayOfWeek())
-                .tide(schedule.getTide())
+                .ship(result.getShip())
+                .user(result.getUser())
+                .schedulePublicId(result.getSchedulePublicId())
+                .remainHeadCount(result.getRemainHeadCount())
+                .departure(result.getDeparture())
+                .dayOfWeek(result.getDayOfWeek())
+                .tide(result.getTide())
                 .build();
     }
 }

@@ -1,4 +1,4 @@
-package com.lamarfishing.core.reservation.service;
+package com.lamarfishing.core.reservation.service.command;
 
 import com.lamarfishing.core.log.statistic.domain.Statistic;
 import com.lamarfishing.core.log.statistic.repository.StatisticRepository;
@@ -16,7 +16,6 @@ import com.lamarfishing.core.user.repository.UserRepository;
 import com.lamarfishing.core.validate.ValidatePublicId;
 import com.lamarfishing.core.reservation.domain.Reservation.Process;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

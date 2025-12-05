@@ -1,4 +1,4 @@
-package com.lamarfishing.core.schedule.service;
+package com.lamarfishing.core.schedule.service.query;
 
 import com.lamarfishing.core.coupon.domain.Coupon;
 import com.lamarfishing.core.coupon.dto.CouponCommonDto;
@@ -10,14 +10,13 @@ import com.lamarfishing.core.log.statistic.service.StatisticService;
 import com.lamarfishing.core.reservation.domain.Reservation;
 import com.lamarfishing.core.reservation.mapper.ReservationMapper;
 import com.lamarfishing.core.reservation.repository.ReservationRepository;
-import com.lamarfishing.core.reservation.service.ReservationCommandService;
+import com.lamarfishing.core.reservation.service.command.ReservationCommandService;
 import com.lamarfishing.core.schedule.domain.Schedule;
 import com.lamarfishing.core.schedule.domain.Type;
-import com.lamarfishing.core.schedule.dto.response.EarlyReservationPopupResponse;
 import com.lamarfishing.core.schedule.dto.response.NormalReservationPopupResponse;
 import com.lamarfishing.core.schedule.dto.response.ReservationCreateResponse;
+import com.lamarfishing.core.schedule.dto.result.EarlyReservationPopupResult;
 import com.lamarfishing.core.schedule.exception.InvalidHeadCount;
-import com.lamarfishing.core.schedule.exception.InvalidSchedulePublicId;
 import com.lamarfishing.core.schedule.exception.ScheduleNotFound;
 import com.lamarfishing.core.schedule.exception.UnauthorizedPopupAccess;
 import com.lamarfishing.core.schedule.repository.ScheduleRepository;
@@ -46,7 +45,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ReservationPopupService {
+public class ReservationPopupQueryService {
 
     private final StatisticService statisticService;
     private final ScheduleRepository scheduleRepository;
@@ -58,11 +57,10 @@ public class ReservationPopupService {
     /**
      * 선예약 팝업 조회
      */
-    @PreAuthorize("hasAnyAuthority('GRADE_ADMIN','GRADE_VIP','GRADE_BASIC')")
-    public EarlyReservationPopupResponse getEarlyReservationPopup(User user, String publicId) {
-        if (!publicId.startsWith("sch")) {
-            throw new InvalidSchedulePublicId();
-        }
+    // @PreAuthorize("hasAnyAuthority('GRADE_ADMIN','GRADE_VIP','GRADE_BASIC')")
+    public EarlyReservationPopupResult getEarlyReservationPopup(User user, String publicId) {
+
+        ValidatePublicId.validateSchedulePublicId(publicId);
 
         Schedule schedule = scheduleRepository.findByPublicId(publicId).orElseThrow(ScheduleNotFound::new);
         if (schedule.getType() != Type.EARLY){
@@ -77,7 +75,7 @@ public class ReservationPopupService {
         EarlyReservationUserDto earlyReservationUserDto = UserMapper.toEarlyReservationUserDto(user,coupons);
         Integer remainHeadCount = schedule.getShip().getMaxHeadCount() - schedule.getCurrentHeadCount();
 
-        return EarlyReservationPopupResponse.from(schedule,remainHeadCount, earlyReservationUserDto,reservationShipDto);
+        return EarlyReservationPopupResult.of(schedule,remainHeadCount, earlyReservationUserDto,reservationShipDto);
     }
 
     /**

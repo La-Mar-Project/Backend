@@ -2,14 +2,14 @@ package com.lamarfishing.core.reservation.controller;
 
 import com.lamarfishing.core.common.dto.response.ApiResponse;
 import com.lamarfishing.core.common.dto.response.PageResponse;
-import com.lamarfishing.core.coupon.service.CouponCommandService;
+import com.lamarfishing.core.coupon.service.command.CouponCommandService;
 import com.lamarfishing.core.reservation.dto.command.ReservationProcessUpdateCommand;
 import com.lamarfishing.core.reservation.dto.common.ReservationSimpleDto;
 import com.lamarfishing.core.reservation.dto.request.ReservationProcessUpdateRequest;
 import com.lamarfishing.core.reservation.dto.response.ReservationDetailResponse;
 import com.lamarfishing.core.reservation.dto.result.ReservationDetailResult;
-import com.lamarfishing.core.reservation.service.ReservationQueryService;
-import com.lamarfishing.core.reservation.service.ReservationCommandService;
+import com.lamarfishing.core.reservation.service.query.ReservationQueryService;
+import com.lamarfishing.core.reservation.service.command.ReservationCommandService;
 import com.lamarfishing.core.user.domain.User;
 import com.lamarfishing.core.user.dto.command.AuthenticatedUser;
 import com.lamarfishing.core.user.service.UserService;

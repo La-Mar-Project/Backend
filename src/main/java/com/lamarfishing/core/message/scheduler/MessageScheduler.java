@@ -1,6 +1,6 @@
 package com.lamarfishing.core.message.scheduler;
 
-import com.lamarfishing.core.reservation.service.ReservationCommandService;
+import com.lamarfishing.core.reservation.service.command.ReservationCommandService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

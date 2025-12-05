@@ -1,4 +1,4 @@
-package com.lamarfishing.core.reservation.service;
+package com.lamarfishing.core.reservation.service.query;
 
 import com.lamarfishing.core.reservation.domain.Reservation;
 import com.lamarfishing.core.reservation.dto.common.ReservationDetailDto;

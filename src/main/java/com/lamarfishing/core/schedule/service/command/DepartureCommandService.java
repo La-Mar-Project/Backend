@@ -1,4 +1,4 @@
-package com.lamarfishing.core.schedule.service;
+package com.lamarfishing.core.schedule.service.command;
 
 import com.lamarfishing.core.message.dto.command.MessageCommonDto;
 import com.lamarfishing.core.schedule.domain.Status;
@@ -11,7 +11,6 @@ import com.lamarfishing.core.reservation.repository.ReservationRepository;
 import com.lamarfishing.core.schedule.domain.Schedule;
 import com.lamarfishing.core.schedule.exception.ScheduleNotFound;
 import com.lamarfishing.core.schedule.repository.ScheduleRepository;
-import com.lamarfishing.core.user.repository.UserRepository;
 import com.lamarfishing.core.validate.ValidatePublicId;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

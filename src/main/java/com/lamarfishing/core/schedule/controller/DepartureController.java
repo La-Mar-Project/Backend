@@ -5,7 +5,7 @@ import com.lamarfishing.core.schedule.dto.command.DepartureCommand;
 import com.lamarfishing.core.schedule.dto.request.DepartureRequest;
 import com.lamarfishing.core.schedule.dto.response.DepartureResponse;
 import com.lamarfishing.core.schedule.dto.result.DepartureResult;
-import com.lamarfishing.core.schedule.service.DepartureCommandService;
+import com.lamarfishing.core.schedule.service.command.DepartureCommandService;
 import com.lamarfishing.core.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

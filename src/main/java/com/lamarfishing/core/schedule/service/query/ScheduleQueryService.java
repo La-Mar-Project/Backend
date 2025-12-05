@@ -1,4 +1,4 @@
-package com.lamarfishing.core.schedule.service;
+package com.lamarfishing.core.schedule.service.query;
 
 import com.lamarfishing.core.schedule.dto.common.ScheduleMainDto;
 import com.lamarfishing.core.schedule.repository.ScheduleRepository;

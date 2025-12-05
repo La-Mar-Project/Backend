@@ -2,7 +2,7 @@ package com.lamarfishing.core.user.controller;
 
 import com.lamarfishing.core.common.dto.response.ApiResponse;
 import com.lamarfishing.core.common.dto.response.PageResponse;
-import com.lamarfishing.core.reservation.service.ReservationQueryService;
+import com.lamarfishing.core.reservation.service.query.ReservationQueryService;
 import com.lamarfishing.core.reservation.dto.common.ReservationSimpleDto;
 import com.lamarfishing.core.user.domain.User;
 import com.lamarfishing.core.user.dto.command.AuthenticatedUser;

@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 //class ReservationPopupServiceTest {
 //
 //    @InjectMocks
-//    private ReservationPopupService reservationPopupService;
+//    private ReservationPopupQueryService reservationPopupService;
 //
 //    @Mock
 //    private ScheduleRepository scheduleRepository;

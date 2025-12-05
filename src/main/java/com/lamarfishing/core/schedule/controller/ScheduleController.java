@@ -7,7 +7,7 @@ import com.lamarfishing.core.schedule.dto.request.UpdateDepartureTimeRequest;
 import com.lamarfishing.core.schedule.dto.response.ScheduleDetailResponse;
 import com.lamarfishing.core.schedule.dto.response.ScheduleMainResponse;
 import com.lamarfishing.core.schedule.dto.response.ViewDepartureTimeResponse;
-import com.lamarfishing.core.schedule.service.ScheduleQueryService;
+import com.lamarfishing.core.schedule.service.query.ScheduleQueryService;
 import com.lamarfishing.core.schedule.service.ScheduleService;
 import com.lamarfishing.core.user.domain.User;
 import com.lamarfishing.core.user.dto.command.AuthenticatedUser;
