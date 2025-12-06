@@ -1,10 +1,13 @@
 # workflow name
 name: CI Pipeline
 
-#main branch에 push시 자동 실행
+# dev 브랜치에 PR이나 Merge시 작동
 on:
+  pull_request:
+    branches: ["dev"]
+
   push:
-    branches: ["main"]
+    branches: ["dev"]
 
 jobs:
   ci:
